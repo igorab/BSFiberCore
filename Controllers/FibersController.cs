@@ -45,8 +45,8 @@ namespace BSFiberCore.Controllers
                 return NotFound();
             }
 
-            var fiber = await _context.Fiber
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var fiber = await _context.Fiber.FirstOrDefaultAsync(m => m.Id == id);
+
             if (fiber == null)
             {
                 return NotFound();
@@ -136,8 +136,8 @@ namespace BSFiberCore.Controllers
                 return NotFound();
             }
 
-            var fiber = await _context.Fiber
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var fiber = await _context.Fiber.FirstOrDefaultAsync(m => m.Id == id);
+
             if (fiber == null)
             {
                 return NotFound();
