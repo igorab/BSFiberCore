@@ -1,4 +1,5 @@
-﻿using BSFiberCore.Models;
+﻿using BSFiberCore.Data;
+using BSFiberCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,37 +8,48 @@ namespace BSFiberCore.Controllers
 {
     public class CalculatorController : Controller
     {
-        // GET: CalculatorController
-        public ActionResult Index()
+        private readonly ApplicationDbContext _context;
+
+        public CalculatorController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Calculator
+        public IActionResult Index()
         {
             return View();
         }
-
+        
+        [HttpGet]
         [HttpPost]
-        public IActionResult Calculate(Calculator calculator)
+        public IActionResult GeomCalculate(Calculator calculator)
         {
             if (ModelState.IsValid)
             {
+                double area = calculator.CalculateArea();
+                ViewBag.Area = area;
+
                 double perimeter = calculator.CalculatePerimeter();
                 ViewBag.Perimeter = perimeter;
-                return View("Index");
+                
+                return View();
             }
-            return View("Index");
+            return View();
         }
-
-        // GET: CalculatorController/Details/5
-        public ActionResult Details(int id)
+        
+        public IActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: CalculatorController/Create
-        public ActionResult Create()
+        // GET: Calculator/Create
+        public IActionResult Create()
         {
             return View();
         }
 
-        // POST: CalculatorController/Create
+        // POST: Calculator/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -52,13 +64,13 @@ namespace BSFiberCore.Controllers
             }
         }
 
-        // GET: CalculatorController/Edit/5
+        // GET: Calculator/Edit
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: CalculatorController/Edit/5
+        // POST: Calculator/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -73,13 +85,13 @@ namespace BSFiberCore.Controllers
             }
         }
 
-        // GET: CalculatorController/Delete/5
+        // GET: Calculator/Delete
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: CalculatorController/Delete/5
+        // POST: Calculator/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)

@@ -2,7 +2,7 @@
 
 <h2>Вычисление геометрических характеристик прямоугольника</h2>
 
-<form asp-action="Calculate" method="post">
+<form asp-action="GeomCalculate" method="post">
     <div>
         <label>Длина:</label>
         <input asp-for="Length" type="number" step="0.01" required />
@@ -15,6 +15,7 @@
 </form>
 
 @if (ViewBag.Perimeter != null)
-{
+{    
     <h3>Периметр: @ViewBag.Perimeter</h3>    
 }
+

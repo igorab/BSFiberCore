@@ -31,6 +31,21 @@ namespace BSFiberCore.Controllers
             return View();
         }
 
+        // Post: Fibers/Calculate
+        public IActionResult Calculate(Calculator calculator)
+        {
+            if (ModelState.IsValid)
+            {
+                double perimeter = calculator.CalculatePerimeter();
+                ViewBag.Perimeter = perimeter;
+                //return View("Index");
+                return View();
+            }
+            //return View("Index");
+            return View();
+        }
+
+
         // Post: Fibers/ShowSearchForm
         public async Task<IActionResult> ShowSearchResults(String SearchPhrase)
         {

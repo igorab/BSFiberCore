@@ -9,5 +9,11 @@
         {
             return 2 * (Length + Width);
         }
+
+        public double CalculateArea()
+        {
+            return Length * Width;
+        }
+
     }
 }
