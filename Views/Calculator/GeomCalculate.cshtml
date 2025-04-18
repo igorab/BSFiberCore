@@ -1,6 +1,5 @@
 ﻿@model BSFiberCore.Models.Calculator
-
-<h2>Вычисление геометрических характеристик прямоугольника</h2>
+<h2>Вычисление геометрических характеристик фигуры</h2>
 
 <form asp-action="GeomCalculate" method="post">
     <div>
@@ -17,5 +16,7 @@
 @if (ViewBag.Perimeter != null)
 {    
     <h3>Периметр: @ViewBag.Perimeter</h3>    
+
+    <h2>Площадь: @ViewBag.Area </h2>
 }
 

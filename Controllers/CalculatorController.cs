@@ -85,7 +85,7 @@ namespace BSFiberCore.Controllers
             }
         }
 
-        // GET: Calculator/Delete
+        [HttpDelete]
         public ActionResult Delete(int id)
         {
             return View();

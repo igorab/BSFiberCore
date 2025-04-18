@@ -1,6 +1,21 @@
 ﻿@model BSFiberCore.Models.Calculator
 
-<h2>Вычисление геометрических характеристик прямоугольника</h2>
+<h2>Расчеты:</h2>
+
+<form  method="post">
+    <div>
+        <label>Момент:</label>
+        <input type="number" step="0.01" required />
+    </div>
+    <div>
+        <label>Продольная сила:</label>
+        <input type="number" step="0.01" required />
+    </div>
+    <button type="submit">Вычислить </button>
+</form>
+
+<br>
+<br>
 
 <form asp-action="Calculate" method="post">
     <div>
