@@ -11,5 +11,6 @@ namespace BSFiberCore.Data
         {
         }
         public DbSet<BSFiberCore.Models.Fiber> Fiber { get; set; } = default!;
+        
     }
 }
