@@ -52,6 +52,14 @@ namespace BSFiberCore.Controllers
             return View("Index", await _context.Fiber.Where(j => j.FiberQ.Contains(SearchPhrase)).ToListAsync());
         }
 
+        // Post: Fibers/ShowSearchForm
+        public async Task<IActionResult> CalculateResults(String CalculateValue)
+        {
+            return View("Index", await _context.Fiber.Where(j => j.FiberQ.Contains(CalculateValue)).ToListAsync());
+        }
+
+
+
         // GET: Fibers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
