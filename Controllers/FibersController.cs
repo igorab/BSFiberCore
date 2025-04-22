@@ -32,19 +32,21 @@ namespace BSFiberCore.Controllers
         }
 
         // Post: Fibers/Calculate
-        public IActionResult Calculate(Calculator calculator)
+        
+        public IActionResult Calculate(Fiber fiber)
         {
             if (ModelState.IsValid)
             {
-                double perimeter = calculator.CalculatePerimeter();
+                double perimeter = (fiber.Length + fiber.Width) *2 ;
+                double area = fiber.Length * fiber.Width;
                 ViewBag.Perimeter = perimeter;
+                ViewBag.Area = area;
                 //return View("Index");
                 return View();
             }
             //return View("Index");
             return View();
-        }
-
+        }        
 
         // Post: Fibers/ShowSearchForm
         public async Task<IActionResult> ShowSearchResults(String SearchPhrase)

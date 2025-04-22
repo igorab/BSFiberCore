@@ -37,7 +37,11 @@
 
         public Fiber()
         {
-                
+            FiberQ = "";
+            FiberAns = "";
+            Bft3 = "";
+            Bft = "";
+            Bf = "";
         }
     }
 }
