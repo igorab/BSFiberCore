@@ -49,7 +49,7 @@ namespace BSFiberCore.Models.BL.Mat
         /// <summary>
         /// Инициализация данными с формы
         /// </summary>        
-        public BSMatFiber(double _Efb, decimal _Yft, decimal _Yb, decimal _Yb1, decimal _Yb2, decimal _Yb3, decimal _Yb5)
+        public BSMatFiber(double _Efb, double _Yft, double _Yb, double _Yb1, double _Yb2, double _Yb3, double _Yb5)
         {
             Efb = _Efb;
             Yft = (double)_Yft;

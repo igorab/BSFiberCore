@@ -9,22 +9,22 @@ namespace BSFiberCore.Models.BL
         private BSFiberCalculation BSFibCalc;
         private object _UnitConverter;
 
-        public BeamSection m_BeamSection { get; private set; }
-        public BSMatFiber m_MatFiber { get; private set; }
+        public bool UseReinforcement { get; set; } = false; 
+        public BeamSection BeamSection { get; set; }
+        public BSMatFiber MatFiber { get; set; }
 
         /// <summary>
         /// Расчет прочности сечения на действие момента
         /// </summary>        
-        private BSFiberReportData FiberCalculate_M(double _M, double[] _prms, double[] _sz)
-        {
-            bool useReinforcement = false; // checkBoxRebar.Checked;
+        public BSFiberReportData FiberCalculate_M(double _M, double[] _prms, double[] _sz)
+        {            
             bool calcOk;
             BSFiberReportData reportData = new BSFiberReportData();
 
             try
             {
-                BSFibCalc = BSFiberCalculation.construct(m_BeamSection, useReinforcement);
-                BSFibCalc.MatFiber = m_MatFiber;
+                BSFibCalc = BSFiberCalculation.construct(BeamSection, UseReinforcement);
+                BSFibCalc.MatFiber = MatFiber;
                 InitRebar(BSFibCalc);
 
                 BSFibCalc.SetParams(_prms);
@@ -35,10 +35,10 @@ namespace BSFiberCore.Models.BL
                 if (calcOk)
                     reportData.InitFromBSFiberCalculation(BSFibCalc, _UnitConverter);
 
-                // запуск расчет по второй группе предельных состояний
+                // расчет по второй группе предельных состояний
                 var FibCalcGR2 = FiberCalculate_Cracking();
-                reportData.m_Messages.AddRange(FibCalcGR2.Msg);
-                reportData.m_CalcResults2Group = FibCalcGR2.Results();
+                //reportData.m_Messages.AddRange(FibCalcGR2.Msg?? "");
+                //reportData.m_CalcResults2Group = FibCalcGR2.Results();
 
                 return reportData;
             }
@@ -72,7 +72,7 @@ namespace BSFiberCore.Models.BL
         }
     }
 
-    internal class BSFiberReportData
+    public class BSFiberReportData
     {
         internal List<string> m_Messages;
         internal Dictionary<string, double> m_CalcResults2Group;

@@ -72,7 +72,7 @@ namespace BSFiberCore.Models.BL.Calc
             base.SetParams(_t);
 
             // need refactoring
-            ( Yft, Yb, Yb1, Yb2, Yb3, Yb5) = (_t[2], _t[3], _t[4], _t[5], _t[6], _t[7]);
+            ( Yft, Yb, Yb1, Yb2, Yb3, Yb5) = (_t[0], _t[1], _t[2], _t[3], _t[4], _t[5]);
         }
 
         public override void SetSize(double[] _t)

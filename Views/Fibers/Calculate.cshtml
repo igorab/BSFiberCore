@@ -7,41 +7,41 @@
     <h4>Геометрические характеристики</h4>
     <div>
         <label>Длина:</label>
-        <input asp-for="Length" type="number" step="0.01" required />
+        <input asp-for="Length" type="number" step="0.01" value=30 required />
     
         <label>Ширина:</label>
-        <input asp-for="Width" type="number" step="0.01" required />
+        <input asp-for="Width" type="number" step="0.01" value=60 required />
     </div>
     <br>
     <h4>Усилия</h4>
     <br>
     <div>
         <label>Момент My:</label>
-        <input asp-for="My" type="number" step="0.01" />
+        <input asp-for="My" type="number" step="0.01" value=1000 />
     
         <label>Продольная сила N:</label>
-        <input asp-for = "N" type="number" step="0.01" />
+        <input asp-for="N" type="number" step="0.01" value=0 />
     
         <label>Поперечная сила Qx:</label>
-        <input asp-for="Qx" type="number" step="0.01" />
+        <input asp-for="Qx" type="number" step="0.01" value=0 />
     </div>
     <br>
     <h4>Характеристики бетона</h4>
     <br>    
     <div>
         <label>Класс бетона на растяжение Bft3:</label>
-        <input asp-for="Bft3" type="text" required />
+        <input asp-for="Bft3" type="text" value = "B30" required />
     </div>
     <br>
     <div>
         <label>Класс бетона на растяжение Bft:</label>
-        <input asp-for="Bft" type="text" required />
+        <input asp-for="Bft" type="text" value="B30" required />
     </div>
 
     <br>
     <div>
         <label>Класс бетона на сжатие Bf:</label>
-        <input asp-for="Bf" type="text" required />
+        <input asp-for="Bf" type="text" value="B30" required />
     </div>    
     <br>
     <h4>Характеристики арматуры</h4>

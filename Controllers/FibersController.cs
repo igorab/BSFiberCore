@@ -37,13 +37,18 @@ namespace BSFiberCore.Controllers
         {
             if (ModelState.IsValid)
             {
+                fiber.RunCalc();
+
+
                 double perimeter = (fiber.Length + fiber.Width) *2 ;
                 double area = fiber.Length * fiber.Width;
                 ViewBag.Perimeter = perimeter;
                 ViewBag.Area = area;
+
                 //return View("Index");
                 return View();
             }
+
             //return View("Index");
             return View();
         }        
