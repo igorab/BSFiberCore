@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\BL\Rep\" />
     <Folder Include="Models\BL\Uom\" />
   </ItemGroup>
 

@@ -192,19 +192,21 @@ namespace BSFiberCore.Models.BL.Calc
         {
             switch (_profile)
             {
-                //case BeamSection.TBeam:
-                //case BeamSection.IBeam:
-                //    if (_reinforcement)
-                //        return new BSFiberCalc_IBeamRods();
-                //    else
-                //        return new BSFibCalc_IBeam();
-                //case BeamSection.Ring:
-                //    return new BSFibCalc_Ring();
-                //case BeamSection.Rect:
-                //    if (_reinforcement)
-                //        return new BSFiberCalc_RectRods();
-                //    else
-                //        return new BSFibCalc_Rect();
+                /*
+                case BeamSection.TBeam:
+                case BeamSection.IBeam:
+                    if (_reinforcement)
+                        return new BSFiberCalc_IBeamRods();
+                    else
+                        return new BSFibCalc_IBeam();
+                case BeamSection.Ring:
+                    return new BSFibCalc_Ring();
+                case BeamSection.Rect:
+                    if (_reinforcement)
+                        return new BSFiberCalc_RectRods();
+                    else
+                        return new BSFibCalc_Rect();
+                */
                 default:
                     return new BSFibCalc_Rect();
             }
