@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Dapper;
 
 namespace BSFiberCore.Models.BL.Lib
 {

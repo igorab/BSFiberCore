@@ -1,17 +1,25 @@
 ﻿using BSFiberCore.Models.BL.Beam;
 using BSFiberCore.Models.BL.Calc;
+using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Mat;
+using BSFiberCore.Models.BL.Rep;
+using BSFiberCore.Models.BL.Uom;
 
 namespace BSFiberCore.Models.BL
 {
     public class BSFiberMain
     {
         private BSFiberCalculation BSFibCalc;
-        private object _UnitConverter;
+        private LameUnitConverter _UnitConverter;
 
         public bool UseReinforcement { get; set; } = false; 
         public BeamSection BeamSection { get; set; }
         public BSMatFiber MatFiber { get; set; }
+
+        public BSFiberMain()
+        {
+            _UnitConverter = new LameUnitConverter();
+        }
 
         /// <summary>
         /// Расчет прочности сечения на действие момента
@@ -44,8 +52,8 @@ namespace BSFiberCore.Models.BL
             }
             catch (Exception _e)
             {
-                // MessageBox.Show("Ошибка в расчете: " + _e.Message);
-                return null;
+                MessageBox.Show("Ошибка в расчете: " + _e.Message);
+                return reportData;
             }
         }
 
@@ -70,16 +78,5 @@ namespace BSFiberCore.Models.BL
         {
             return new Dictionary<string, double>();
         }
-    }
-
-    public class BSFiberReportData
-    {
-        internal List<string> m_Messages;
-        internal Dictionary<string, double> m_CalcResults2Group;
-
-        internal void InitFromBSFiberCalculation(BSFiberCalculation bSFibCalc, object unitConverter)
-        {
-            //throw new NotImplementedException();
-        }
-    }
+    }    
 }

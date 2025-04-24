@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BSFiberCore.Models.BL.Beam;
+using Dapper;
 
 namespace BSFiberCore.Models.BL.Lib
 {
