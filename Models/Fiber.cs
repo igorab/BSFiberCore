@@ -1,5 +1,6 @@
 ﻿
 using BSFiberCore.Models.BL;
+using BSFiberCore.Models.BL.Rep;
 using System.Drawing.Text;
 
 namespace BSFiberCore.Models
@@ -48,7 +49,10 @@ namespace BSFiberCore.Models
             Bf = "";
         }
 
-        internal void RunCalc()
+        /// <summary>
+        ///  Расчеты по методу предельных усилий
+        /// </summary>
+        internal string RunCalc()
         {
             double Efb = 2141404.0200;
 
@@ -61,7 +65,8 @@ namespace BSFiberCore.Models
             MatFiber.Rfbt2n = 39.67;
             MatFiber.Rfbtn = 30.59;
             MatFiber.Rfbn = 188.65;
-            
+
+            List<BSFiberReportData> calcResults_MNQ = new List<BSFiberReportData>();
 
             BSFiberMain fiberMain = new BSFiberMain()
             {
@@ -73,7 +78,14 @@ namespace BSFiberCore.Models
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
             double[] sz = {Length, Width, 0};
 
-            fiberMain.FiberCalculate_M(My, prms, sz);
+            // расчет на чистый изгиб
+            BSFiberReportData fibCalc_M = fiberMain.FiberCalculate_M(My, prms, sz);
+            calcResults_MNQ.Add(fibCalc_M);
+
+            // расчет по наклонной полосе на действие момента [6.1.7]
+
+
+            return BSFiberReport_M.RunMultiReport(calcResults_MNQ);
         }
     }
 }

@@ -93,7 +93,7 @@ namespace BSFiberCore.Models.BL.Rep
         /// </summary>        
         public virtual void Header(StreamWriter w)
         {
-            w.WriteLine("<html>");
+            w.WriteLine("<html><body>");
             w.WriteLine($"<H1>{ReportName}</H1>");
             w.WriteLine($"<H4>Расчет выполнен по {BSData.ProgConfig.NormDoc}</H4>");
 
@@ -511,7 +511,7 @@ namespace BSFiberCore.Models.BL.Rep
                 w.WriteLine("<br>");
             }
 
-            w.WriteLine("</html>");            
+            w.WriteLine("</body></html>");            
         }
 
         /// <summary>

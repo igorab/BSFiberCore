@@ -1,6 +1,7 @@
 ﻿using BSFiberCore.Models.BL.Beam;
 using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Uom;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,24 +41,24 @@ namespace BSFiberCore.Models.BL.Rep
         /// </summary>
         /// <param name="iRep"></param>
         /// <param name="_calcResults"></param>
-        public static void RunMultiReport(List<BSFiberReportData> _calcResults)
+        public static string RunMultiReport(List<BSFiberReportData> _calcResults)
         {
             if (_calcResults != null && _calcResults.Count > 0)
             {
                 BSFiberReport_M fiberReport_M = new BSFiberReport_M { ListFiberReportData = _calcResults };
                 fiberReport_M.BSFibCalc = _calcResults[0];
-                fiberReport_M.CreateMultiReport();
+                return fiberReport_M.CreateMultiReport();
             }
             else
             {
-                // MessageBox.Show("Нет данных для отчета!", "Проверка сечения", MessageBoxButton.OK, MessageBoxImage.Error);
+                return MessageBox.Show("Нет данных для отчета!", "Проверка сечения" /*, MessageBoxButton.OK, MessageBoxImage.Error*/);
             }
         }
 
         /// <summary>
         /// сформировать отчет по различным загружениям
         /// </summary>
-        public void CreateMultiReport()
+        public string CreateMultiReport()
         {
             try
             {
@@ -104,20 +105,17 @@ namespace BSFiberCore.Models.BL.Rep
                 {
                     MessageBox.Show("Ошибка при формировании отчета: " + _e.Message);
                     pathToHtmlFile = "";
-                }                        
-                    
-                System.Diagnostics.Process.Start(pathToHtmlFile);
-                                
-                //
-                //    string errMsg = "";
-                //    foreach (string ms in m_Msg) errMsg += ms + ";\t\n";
+                    return pathToHtmlFile;
+                }
 
-                //    MessageBox.Show(errMsg);
-                //}
+                //System.Diagnostics.Process.Start(pathToHtmlFile);
+
+                var htmlContent = System.IO.File.ReadAllText(pathToHtmlFile);
+                return  htmlContent;                
             }
             catch (Exception _e)
             {
-                MessageBox.Show("Ошибка в отчете " + _e.Message);
+                return MessageBox.Show("Ошибка в отчете " + _e.Message);
             }
         }
 
