@@ -1,5 +1,6 @@
 ﻿
 using BSFiberCore.Models.BL;
+using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Rep;
 using System.Drawing.Text;
 
@@ -39,6 +40,12 @@ namespace BSFiberCore.Models
 
         public double a1_cm { get; set; }
 
+        public double Rs { get; set; }
+
+        public double Rsc { get; set; }
+
+        public double Es { get; set; }
+
 
         public Fiber()
         {
@@ -68,12 +75,16 @@ namespace BSFiberCore.Models
 
             List<BSFiberReportData> calcResults_MNQ = new List<BSFiberReportData>();
 
+            bool use_reinforcement = As > 0 || A1s > 0;
+
             BSFiberMain fiberMain = new BSFiberMain()
             {
-                UseReinforcement = false,
+                UseReinforcement = use_reinforcement,
                 BeamSection = BL.Beam.BeamSection.Rect,
                 MatFiber = MatFiber
             };
+
+            fiberMain.Fiber = this;
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
             double[] sz = {Length, Width, 0};
@@ -85,7 +96,8 @@ namespace BSFiberCore.Models
             // расчет по наклонной полосе на действие момента [6.1.7]
 
 
-            return BSFiberReport_M.RunMultiReport(calcResults_MNQ);
+            string htmlcontent = BSFiberReport_M.RunMultiReport(calcResults_MNQ);
+            return htmlcontent;
         }
     }
 }

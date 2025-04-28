@@ -45,6 +45,7 @@ namespace BSFiberCore.Controllers
                 ViewBag.Area = area;
 
                 ViewBag.HtmlContent = htmlContent;
+
                 //return View("Index");
                 return View();
             }

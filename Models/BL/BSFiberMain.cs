@@ -4,6 +4,7 @@ using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Mat;
 using BSFiberCore.Models.BL.Rep;
 using BSFiberCore.Models.BL.Uom;
+using static Azure.Core.HttpHeader;
 
 namespace BSFiberCore.Models.BL
 {
@@ -15,6 +16,7 @@ namespace BSFiberCore.Models.BL
         public bool UseReinforcement { get; set; } = false; 
         public BeamSection BeamSection { get; set; }
         public BSMatFiber MatFiber { get; set; }
+        public Fiber Fiber { get; internal set; }
 
         public BSFiberMain()
         {
@@ -31,7 +33,7 @@ namespace BSFiberCore.Models.BL
 
             try
             {
-                BSFibCalc = BSFiberCalculation.construct(BeamSection, UseReinforcement);
+                BSFibCalc = BSFiberCalculation.Construct(BeamSection, UseReinforcement);
                 BSFibCalc.MatFiber = MatFiber;
                 InitRebar(BSFibCalc);
 
@@ -57,10 +59,27 @@ namespace BSFiberCore.Models.BL
             }
         }
 
+        /// <summary>
+        ///  Задать армирование
+        /// </summary>
+        /// <param name="bSFibCalc"></param>
         private void InitRebar(BSFiberCalculation bSFibCalc)
         {
-            //throw new NotImplementedException();
-            return;
+            double[] matRod = { Fiber.Rs, Fiber.Rsc, Fiber.As, Fiber.A1s, Fiber.Es, Fiber.a_cm, Fiber.a1_cm };
+
+            if (bSFibCalc is BSFiberCalc_RectRods)
+            {
+                BSFiberCalc_RectRods _bsCalcRods = (BSFiberCalc_RectRods)bSFibCalc;
+                
+                _bsCalcRods.SetLTRebar(matRod);
+            }
+            else if (bSFibCalc is BSFiberCalc_IBeamRods)
+            {
+                BSFiberCalc_IBeamRods _bsCalcRods = (BSFiberCalc_IBeamRods)bSFibCalc;
+                
+                //TODO refactoring
+                _bsCalcRods.GetLTRebar(matRod);
+            }
         }
 
         private FiberCalculate_Cracking FiberCalculate_Cracking()

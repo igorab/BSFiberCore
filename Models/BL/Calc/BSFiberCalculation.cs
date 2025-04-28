@@ -188,11 +188,10 @@ namespace BSFiberCore.Models.BL.Calc
         /// <param name="_profile">Профиль сечения</param>
         /// <param name="_reinforcement">Используется ли арматура</param>
         /// <returns>Экземпляр класса расчета</returns>
-        public static BSFiberCalculation construct(BeamSection _profile, bool _reinforcement = false)
+        public static BSFiberCalculation Construct(BeamSection _profile, bool _reinforcement = false)
         {
             switch (_profile)
-            {
-                
+            {                
                 case BeamSection.TBeam:
                 case BeamSection.IBeam:
                     if (_reinforcement)
@@ -205,14 +204,10 @@ namespace BSFiberCore.Models.BL.Calc
                     if (_reinforcement)
                         return new BSFiberCalc_RectRods();
                     else
-                        return new BSFibCalc_Rect();
-                
+                        return new BSFibCalc_Rect();                
                 default:
                     return new BSFibCalc_Rect();
-            }
-
-            return new BSFiberCalculation();
+            }            
         }
-
     }
 }

@@ -30,18 +30,38 @@
     <br>    
     <div>
         <label>Класс бетона на растяжение Bft3:</label>
-        <input asp-for="Bft3" type="text" value = "B30" required />
+        <input asp-for="Bft3" type="text" list="options"  value="B3i" required />
+        <datalist id="options">
+            <option value="B1i">B1i</option>
+            <option value="B1,5i">B1,5i</option>
+            <option value="B2i">B2i</option>
+            <option value="B2,5i">B2,5i</option>
+            <option value="B2,5i">B3i</option>
+        </datalist>
     </div>
     <br>
     <div>
         <label>Класс бетона на растяжение Bft:</label>
-        <input asp-for="Bft" type="text" value="B30" required />
+        <input asp-for="Bft" type="text" list="options1" value="B3" required />
+        <datalist id="options1">
+            <option value="B1">B1</option>
+            <option value="B1,5">B1,5</option>
+            <option value="B2">B2</option>
+            <option value="B2,5">B2,5</option>
+            <option value="B2,5">B3</option>
+        </datalist>
+
     </div>
 
     <br>
     <div>
         <label>Класс бетона на сжатие Bf:</label>
-        <input asp-for="Bf" type="text" value="B30" required />
+        <input asp-for="Bf" type="text" list="options2" value="B30" required />
+        <datalist id="options2">
+            <option value="B20">B20</option>
+            <option value="B25">B25</option>
+            <option value="B30">B30</option>
+        </datalist>
     </div>    
     <br>
     <h4>Характеристики арматуры</h4>
@@ -61,13 +81,14 @@
     <button type="submit">Вычислить </button>
 </form>
 
-@if (ViewBag.Perimeter != null)
+<div>
+@if (ViewBag.Perimeter != 0)
 {
     <h3>Периметр: @ViewBag.Perimeter</h3>
 
     <h3>Площадь: @ViewBag.Area</h3>
 
-    
-    @ViewBag.HtmlContent
+    <p>@Html.Raw(ViewBag.HtmlContent?? string.Empty)</p>
     
 }
+</div>
