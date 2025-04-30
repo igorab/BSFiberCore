@@ -7,14 +7,21 @@
     <h4>Геометрические характеристики</h4>
     <p>Выберите тип сечения:</p>
     <div>
-        <input asp-for="SectionType" type="radio" id="Rectangle" name="SectionType" value="0" />
-        <label for="section1">Прямоугольное</label>
-
-        <input asp-for="SectionType" type="radio" id="IBeam" name="SectionType" value="1" />
-        <label for="section2">Двутавровое</label>
-
-        <input asp-for="SectionType" type="radio" id="Ring" name="SectionType" value="2" />
-        <label for="section3">Кольцевое</label>
+        <label for="section1">Прямоугольное</label> 
+        <input asp-for="SectionType" type="radio" id="Rectangle" name="SectionType" value="4" />
+        &ndash;
+        <label for="section2">Тавр T</label>
+        <input asp-for="SectionType" type="radio" id="TBeam" name="SectionType" value="1" />
+        &ndash;
+        <label for="section2">Тавр _L</label>
+        <input asp-for="SectionType" type="radio" id="LBeam" name="SectionType" value="5" />
+        &ndash;
+        <label for="section2">Двутавр</label>
+        <input asp-for="SectionType" type="radio" id="IBeam" name="SectionType" value="2" />
+        &ndash;
+        <label for="section3">Кольцо</label>
+        <input asp-for="SectionType" type="radio" id="Ring" name="SectionType" value="3" />
+        
     </div>
 
     <div>

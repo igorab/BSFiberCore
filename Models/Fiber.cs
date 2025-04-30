@@ -96,18 +96,17 @@ namespace BSFiberCore.Models
 
             BSFiberMain fiberMain = new BSFiberMain()
             {
-                UseReinforcement = use_reinforcement,                
+                UseReinforcement = use_reinforcement,
+                BeamSection = (BeamSection)SectionType,
                 MatFiber = MatFiber
             };
-
-            fiberMain.Fiber = this;
-            fiberMain.BeamSection = BL.Beam.BeamSection.IBeam;
+            
+            fiberMain.Fiber = this;            
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
-            double[] sz = {Length, Width, 0};
-
+            
             // расчет на чистый изгиб
-            BSFiberReportData fibCalc_M = fiberMain.FiberCalculate_M(My, prms, sz);
+            BSFiberReportData fibCalc_M = fiberMain.FiberCalculate_M(My, prms);
             calcResults_MNQ.Add(fibCalc_M);
 
             // расчет по наклонной полосе на действие момента [6.1.7]

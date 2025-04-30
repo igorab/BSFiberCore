@@ -193,6 +193,7 @@ namespace BSFiberCore.Models.BL.Calc
             switch (_profile)
             {                
                 case BeamSection.TBeam:
+                case BeamSection.LBeam:
                 case BeamSection.IBeam:
                     if (_reinforcement)
                         return new BSFiberCalc_IBeamRods();
