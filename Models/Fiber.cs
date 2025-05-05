@@ -105,6 +105,7 @@ namespace BSFiberCore.Models
             
             fiberMain.Fiber = this;
             fiberMain.InitSize();
+            fiberMain.InitMaterials();
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
 

@@ -189,6 +189,13 @@ namespace BSFiberCore.Models.BL
             sz = BeamWidtHeight(out double w, out double h, out double area);
         }
 
+        public void InitMaterials()
+        {
+            var m_RebarDiameters = BSData.LoadRebarDiameters();
+            var m_Rebar = BSData.LoadRebar();
+            var FiberConcrete = BSData.LoadFiberConcreteTable();
+        }
+
         /// <summary>
         /// Расчет прочности сечения на действие момента
         /// </summary>        

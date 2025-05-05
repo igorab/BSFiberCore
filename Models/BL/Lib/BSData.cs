@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using BSFiberCore.Models.BL.Beam;
 using Dapper;
+using System.Linq;
+using System.Data.SQLite;
 
 namespace BSFiberCore.Models.BL.Lib
 {
@@ -17,9 +19,9 @@ namespace BSFiberCore.Models.BL.Lib
 
         public static string ResourcePath(string _file) => Path.Combine(Environment.CurrentDirectory, "Resources", _file);  
 
-        public static string DataPath(string _file)  => Path.Combine(Environment.CurrentDirectory, "Data", _file); 
-        
-        public static readonly string connectionString = "Data Source =.\\Data\\Fiber.db; Version = 3;";
+        public static string DataPath(string _file)  => Path.Combine(Environment.CurrentDirectory, "Data", _file);
+
+        public static readonly string connectionString = "Data Source =C:\\Work\\BSFiberCore\\Models\\BL\\Data\\Fiber.db; Version = 3;";//"Data Source =.\\Data\\Fiber.db; Version = 3;"
 
         public static bool Connect()
         {
@@ -46,7 +48,7 @@ namespace BSFiberCore.Models.BL.Lib
         /// <returns>Строка подключения</returns>
         public static string  LoadConnectionString()
         {            
-            string s = System.Configuration.ConfigurationManager.ConnectionStrings[ConfigId]?.ConnectionString;
+            string? s = System.Configuration.ConfigurationManager.ConnectionStrings[ConfigId]?.ConnectionString;
             if (string.IsNullOrEmpty(s))
                 s = connectionString;
             return s;
@@ -63,7 +65,7 @@ namespace BSFiberCore.Models.BL.Lib
                 using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
                     var output = cnn.Query<FormParams>("select * from Params where ID = 1", new DynamicParameters());
-                    if (output != null /*&& output.Count() > 0*/)                    
+                    if (output != null && output.Count() > 0)                    
                         return output.ToList()[0];                    
                     else
                         return new FormParams();
@@ -860,7 +862,7 @@ namespace BSFiberCore.Models.BL.Lib
             }
             catch
             {
-                throw;
+                return new List<RebarDiameters>();
             }
         }
 
@@ -1014,76 +1016,77 @@ namespace BSFiberCore.Models.BL.Lib
         }
     }
 
-    internal class SQLiteConnection : IDbConnection
-    {
-        private string v;
+    //internal class SQLiteConnection : IDbConnection
+    //{
+    //    private string v;
 
-        public SQLiteConnection(string v)
-        {
-            this.v = v;
-        }
+    //    public SQLiteConnection(string v)
+    //    {
+    //        this.v = v;
+    //    }
 
-        public string ConnectionString { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    //    public string ConnectionString { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public int ConnectionTimeout => throw new NotImplementedException();
+    //    public int ConnectionTimeout => throw new NotImplementedException();
 
-        public string Database => throw new NotImplementedException();
+    //    public string Database => throw new NotImplementedException();
 
-        public ConnectionState State => throw new NotImplementedException();
+    //    public ConnectionState State => throw new NotImplementedException();
 
-        public IDbTransaction BeginTransaction()
-        {
-            throw new NotImplementedException();
-        }
+    //    public IDbTransaction BeginTransaction()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public IDbTransaction BeginTransaction(IsolationLevel il)
-        {
-            throw new NotImplementedException();
-        }
+    //    public IDbTransaction BeginTransaction(IsolationLevel il)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void ChangeDatabase(string databaseName)
-        {
-            throw new NotImplementedException();
-        }
+    //    public void ChangeDatabase(string databaseName)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Close()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Close()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public IDbCommand CreateCommand()
-        {
-            throw new NotImplementedException();
-        }
+    //    public IDbCommand CreateCommand()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Dispose()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Open()
-        {
-            throw new NotImplementedException();
-        }
+    //    public void Open()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        internal int Execute(string v)
-        {
-            throw new NotImplementedException();
-        }
+    //    internal int Execute(string v)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        internal int Execute(string v, Efforts tmpEfforts, IDbTransaction tr)
-        {
-            throw new NotImplementedException();
-        }
+    //    internal int Execute(string v, Efforts tmpEfforts, IDbTransaction tr)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        internal int Execute(string v, object prms, IDbTransaction tr)
-        {
-            throw new NotImplementedException();
-        }
+    //    internal int Execute(string v, object prms, IDbTransaction tr)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        internal Query<T> Query<T>(string v, object dynamicParameters)
-        {            
-            return new Query<T>();
-        }
-    }
+    //    internal Query<T> Query<T>(string v, object dynamicParameters)
+    //    {            
+    //        return new Query<T>();
+    //    }
+    //}
+
 }
