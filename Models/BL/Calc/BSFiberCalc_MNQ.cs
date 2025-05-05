@@ -806,7 +806,7 @@ namespace BSFiberCore.Models.BL.Calc
         public virtual void SetParams(double[] _t)
         {
             // TODO Refactoring
-            (_, _, Yft, Yb, Yb1, Yb2, Yb3, Yb5, B) = (_t[0], _t[1], _t[2], _t[3], _t[4], _t[5], _t[6], _t[7], _t[8]);            
+            (Yft, Yb, Yb1, Yb2, Yb3, Yb5) = (_t[0], _t[1], _t[2], _t[3], _t[4], _t[5]);            
         }
 
         public virtual void SetSize(double[] _t) {}
@@ -825,26 +825,21 @@ namespace BSFiberCore.Models.BL.Calc
         public void SetEfforts(Dictionary<string, double> _efforts)
         {            
             m_Efforts = new Dictionary<string, double>(_efforts);
-            
-            //Момент от действия полной нагрузки
-            Mx = m_Efforts["Mx"];
-            My = m_Efforts["My"];
 
+            //Момент от действия полной нагрузки            
+            Mx = m_Efforts.ContainsKey("Mx")? m_Efforts["Mx"] : 0;
+            My = m_Efforts.ContainsKey("My")? m_Efforts["My"] : 0;
             //Продольное усилие кг
-            N = m_Efforts["N"];
-
+            N = m_Efforts.ContainsKey("N") ? m_Efforts["N"] : 0;
             // Поперечная сила
-            Qx = m_Efforts["Qx"];
-            Qy = m_Efforts["Qy"];
-
+            Qx = m_Efforts.ContainsKey("Qx")? m_Efforts["Qx"] :0;
+            Qy = m_Efforts.ContainsKey("Qy")? m_Efforts["Qy"] :0 ;
             //Момент от действия постянных и длительных нагрузок нагрузок
-            Ml1toM1 = m_Efforts["Ml"];
-
+            Ml1toM1 = m_Efforts.ContainsKey("Ml") ? m_Efforts["Ml"]: 0;
             // случайный эксцентриситет
-            e0 = m_Efforts["e0"];
-
+            e0  = m_Efforts.ContainsKey("e0")? m_Efforts["e0"]: 0;
             // Эксцентриситет приложения силы N
-            e_N = m_Efforts["eN"];           
+            e_N = m_Efforts.ContainsKey("eN") ? m_Efforts["eN"]: 0;           
             
             // эксцентриситет от момента
             double e_MN = (N != 0) ? My / N : 0;

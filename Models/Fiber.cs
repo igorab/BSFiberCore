@@ -1,8 +1,10 @@
 ﻿
 using BSFiberCore.Models.BL;
 using BSFiberCore.Models.BL.Beam;
+using BSFiberCore.Models.BL.Calc;
 using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Rep;
+using NuGet.Protocol.Plugins;
 using System.Drawing.Text;
 
 namespace BSFiberCore.Models
@@ -101,13 +103,74 @@ namespace BSFiberCore.Models
                 MatFiber = MatFiber
             };
             
-            fiberMain.Fiber = this;            
+            fiberMain.Fiber = this;
+            fiberMain.InitSize();
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
-            
-            // расчет на чистый изгиб
-            BSFiberReportData fibCalc_M = fiberMain.FiberCalculate_M(My, prms);
-            calcResults_MNQ.Add(fibCalc_M);
+
+            Dictionary<string, double> mnq = new Dictionary<string, double>() {["My"]= My, ["N"] = N, ["Qx"] = Qx};
+
+            double Mc_ult, UtilRate_Mc;
+            double N_ult, UtilRate_N;
+
+            int iRep = 0;
+
+            if (My > 0 && N == 0 && Qx == 0)
+            {
+                // расчет на чистый изгиб
+                BSFiberReportData fibCalc_M = fiberMain.FiberCalculate_M(My, prms);
+                calcResults_MNQ.Add(fibCalc_M);
+            }
+            else if (N > 0 && Qx == 0)
+            {
+                // Расчет по 1 гр пред. сост                    
+                BSFiberCalc_MNQ fiberCalc_N = fiberMain.FibCalc_MNQ(mnq, prms);
+
+                // расчет на действие сжимающей силы (учитывает заданный изгибающий момент + момент от эксцентриситета N)
+                (N_ult, UtilRate_N) = fiberCalc_N.Calculate_Nz();
+
+                // [6.1.13] [6.1.30] + проверка на момент по наклонному сечению
+                if (My != 0) // + M = N*e учесть
+                {
+                    (Mc_ult, UtilRate_Mc) = fiberCalc_N.Calculate_Mc();
+                }
+
+                BSFiberReport_N report = new BSFiberReport_N() { };
+                report.InitFromFiberCalc(fiberCalc_N);
+
+                BSFiberCalc_Cracking calcResults2Group = fiberMain.FiberCalculate_Cracking(mnq);
+                report.CalcResults2Group = calcResults2Group.Results();
+
+                calcResults_MNQ.Add(report.GetBSFiberReportData());
+
+            }
+            else if (Qx != 0)
+            {
+                // Расчет на действие поперечных сил     
+                // учитывает расчет по накл полосе надействие момента                    
+                BSFiberCalc_MNQ fiberCalc_Qc = fiberMain.FibCalc_MNQ(mnq, prms);
+
+                // [6.1.27] [6.1.28]
+                (double Qc_ult, double UtilRate_Qc) = fiberCalc_Qc.Calculate_Qcx();
+                if (N > 0)
+                {
+                    // [6.1.13] [6.1.30]
+                    (N_ult, UtilRate_N) = fiberCalc_Qc.Calculate_Nz();
+                }
+
+                if (My > 0) // + M = N*e учесть
+                {
+                    (Mc_ult, UtilRate_Mc) = fiberCalc_Qc.Calculate_Mc();
+                }
+
+                BSFiberCalc_Cracking calcResults2Group = fiberMain.FiberCalculate_Cracking(mnq);
+                fiberCalc_Qc.CalcResults2Group = calcResults2Group.Results();
+
+                var report = BSFiberReport_MNQ.FiberReport_Qc(fiberCalc_Qc, ++iRep);
+
+                calcResults_MNQ.Add(report.GetBSFiberReportData());
+
+            }
 
             // расчет по наклонной полосе на действие момента [6.1.7]
             string htmlcontent = BSFiberReport_M.RunMultiReport(calcResults_MNQ);

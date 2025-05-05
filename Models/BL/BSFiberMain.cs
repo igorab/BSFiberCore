@@ -5,7 +5,7 @@ using BSFiberCore.Models.BL.Mat;
 using BSFiberCore.Models.BL.Rep;
 using BSFiberCore.Models.BL.Uom;
 using System.Data;
-using static Azure.Core.HttpHeader;
+
 
 namespace BSFiberCore.Models.BL
 {
@@ -13,11 +13,14 @@ namespace BSFiberCore.Models.BL
     {
         private BSFiberCalculation BSFibCalc;
         private LameUnitConverter _UnitConverter;
+        private double[] sz;
 
-        public bool UseReinforcement { get; set; } = false; 
+        public bool UseReinforcement { get; set; } = false;
         public BeamSection BeamSection { get; set; }
         public BSMatFiber MatFiber { get; set; }
         public Fiber Fiber { get; internal set; }
+        public List<string> m_Message { get; private set; }
+        public Dictionary<string, double> m_CalcResults2Group { get; private set; }
 
         public BSFiberMain()
         {
@@ -30,7 +33,7 @@ namespace BSFiberCore.Models.BL
         /// <param name="_length">Длина балки </param>
         /// <returns>массив размеров </returns>
         private double[] BeamSizes(double _length = 0)
-        {            
+        {
             double[] sz = new double[2];
             double b = Fiber.Width, h = Fiber.Length;
             double bf = Fiber.bf, hf = Fiber.hf, bw = Fiber.bw, hw = Fiber.hw, b1f = Fiber.b1f, h1f = Fiber.h1f;
@@ -41,23 +44,23 @@ namespace BSFiberCore.Models.BL
                 return sz;
             }
             else if (BeamSection == BeamSection.Rect)
-            {                
+            {
                 sz = new double[] { b, h, _length };
             }
             else if (BeamSection == BeamSection.TBeam)
-            {                
+            {
                 sz = new double[] { bf, hf, bw, hw, b1f, h1f, _length };
             }
             else if (BeamSection == BeamSection.LBeam)
-            {                
+            {
                 sz = new double[] { bf, hf, bw, hw, b1f, h1f, _length };
             }
             else if (BeamSection == BeamSection.IBeam)
-            {                
+            {
                 sz = new double[] { bf, hf, bw, hw, b1f, h1f, _length };
             }
             else if (BeamSection == BeamSection.Ring)
-            {             
+            {
                 sz = new double[] { r2, r1, _length };
             }
 
@@ -68,7 +71,7 @@ namespace BSFiberCore.Models.BL
         ///  Размеры балки
         /// </summary>        
         private double[] BeamWidtHeight(out double _w, out double _h, out double _area)
-        {            
+        {
             double[] sz = BeamSizes();
 
             if (BeamSection == BeamSection.Rect)
@@ -104,19 +107,98 @@ namespace BSFiberCore.Models.BL
             return sz;
         }
 
+        public BSFiberCalc_MNQ FibCalc_MNQ(Dictionary<string, double> _MNQ, double[] _prms)
+        {
+            BSFiberCalc_MNQ fibCalc = BSFiberCalc_MNQ.Construct(BeamSection);
+
+            fibCalc.MatFiber = MatFiber;
+            fibCalc.UseRebar = UseReinforcement;
+            fibCalc.Rebar         = new Rebar() { };
+            fibCalc.BetonType     = new BetonType() { };
+            fibCalc.UnitConverter = _UnitConverter;
+            fibCalc.SetFiberFromLoadData(new FiberBeton() { });
+            fibCalc.SetSize(sz);
+            fibCalc.SetParams(_prms);
+            fibCalc.SetEfforts(_MNQ);
+            fibCalc.SetN_Out();
+
+            return fibCalc;
+        }
+
+        /// <summary>
+        /// Расчеты стельфибробетона по предельным состояниям второй группы
+        /// 1) Расчет предельного момента образования трещин
+        /// 2) Расчет ширины раскрытия трещины
+        /// </summary>        
+        public BSFiberCalc_Cracking FiberCalculate_Cracking(Dictionary<string, double> MNQ)
+        {
+            bool calcOk;
+            try
+            {
+                BSBeam bsBeam = BSBeam.construct(BeamSection);
+
+                bsBeam.SetSizes(BeamSizes());
+                
+                BSFiberCalc_Cracking calc_Cracking = new BSFiberCalc_Cracking(MNQ)
+                {
+                    Beam = bsBeam,
+                    typeOfBeamSection = BeamSection
+                };
+
+                double selectedDiameter = 10;
+                double Es = 0;
+                // задать тип арматуры
+                calc_Cracking.MatRebar = new BSMatRod(Es)
+                {
+                    RCls = "",
+                    Rs = 0,
+                    e_s0 = 0,
+                    e_s2 = 0,
+                    As = 0,
+                    As1 = 0,
+                    a_s = 0,
+                    a_s1 = 0,
+                    Reinforcement = true,
+                    SelectedRebarDiameter = selectedDiameter
+                };
+
+                // SetFiberMaterialProperties();
+
+                calc_Cracking.MatFiber = MatFiber;
+
+                calcOk = calc_Cracking.Calculate();
+
+                if (m_Message == null) m_Message = new List<string>();
+                m_Message.AddRange(calc_Cracking.Msg);
+
+                if (calcOk)
+                    m_CalcResults2Group = calc_Cracking.Results();
+
+                return calc_Cracking;
+            }
+            catch (Exception _e)
+            {
+                MessageBox.Show("Ошибка в расчете: " + _e.Message);
+            }
+
+            return null;
+        }
+
+        public void InitSize()
+        {
+            sz = BeamWidtHeight(out double w, out double h, out double area);
+        }
 
         /// <summary>
         /// Расчет прочности сечения на действие момента
         /// </summary>        
         public BSFiberReportData FiberCalculate_M(double _M, double[] _prms)
-        {            
+        {
             bool calcOk;
             BSFiberReportData reportData = new BSFiberReportData();
 
             try
-            {
-                double[] sz = BeamWidtHeight(out double w, out double h, out double area);
-
+            {                
                 BSFibCalc = BSFiberCalculation.Construct(BeamSection, UseReinforcement);
                 BSFibCalc.MatFiber = MatFiber;
                 InitRebar(BSFibCalc);
@@ -130,9 +212,9 @@ namespace BSFiberCore.Models.BL
                     reportData.InitFromBSFiberCalculation(BSFibCalc, _UnitConverter);
 
                 // расчет по второй группе предельных состояний
-                var FibCalcGR2 = FiberCalculate_Cracking();
-                //reportData.m_Messages.AddRange(FibCalcGR2.Msg?? "");
-                //reportData.m_CalcResults2Group = FibCalcGR2.Results();
+                var FibCalcGR2 = FiberCalculate_Cracking(BSFibCalc.Efforts);
+                reportData.m_Messages.AddRange(FibCalcGR2.Msg);
+                reportData.m_CalcResults2Group = FibCalcGR2.Results();
 
                 return reportData;
             }
@@ -154,32 +236,16 @@ namespace BSFiberCore.Models.BL
             if (bSFibCalc is BSFiberCalc_RectRods)
             {
                 BSFiberCalc_RectRods _bsCalcRods = (BSFiberCalc_RectRods)bSFibCalc;
-                
+
                 _bsCalcRods.SetLTRebar(matRod);
             }
             else if (bSFibCalc is BSFiberCalc_IBeamRods)
             {
                 BSFiberCalc_IBeamRods _bsCalcRods = (BSFiberCalc_IBeamRods)bSFibCalc;
-                
+
                 //TODO refactoring
                 _bsCalcRods.GetLTRebar(matRod);
             }
         }
-
-        private FiberCalculate_Cracking FiberCalculate_Cracking()
-        {
-            //throw new NotImplementedException();
-            return null;
-        }
-    }
-
-    internal class FiberCalculate_Cracking
-    {
-        public List<string> Msg { get; internal set; }
-
-        internal Dictionary<string, double> Results()
-        {
-            return new Dictionary<string, double>();
-        }
-    }    
+    }   
 }
