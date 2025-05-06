@@ -22,4 +22,8 @@
     <Folder Include="Models\BL\Uom\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Resources\СК1.jpg" />
+  </ItemGroup>
+
 </Project>
