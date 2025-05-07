@@ -63,15 +63,15 @@ namespace BSFiberCore.Models
         public double Rsc { get; set; }
 
         public double Es { get; set; }
-        public double Efb { get; internal set; }
+        public double Efb { get; set; }
 
         // коэффициенты надежности
-        public double Yft { get; internal set; }
-        public double Yb { get; internal set; }
-        public double Yb1 { get; internal set; }
-        public double Yb2 { get; internal set; }
-        public double Yb3 { get; internal set; }
-        public double Yb5 { get; internal set; }
+        public double Yft { get;  set; }
+        public double Yb { get;  set; }
+        public double Yb1 { get;  set; }
+        public double Yb2 { get;  set; }
+        public double Yb3 { get;  set; }
+        public double Yb5 { get;  set; }
 
         public Fiber()
         {
@@ -82,7 +82,7 @@ namespace BSFiberCore.Models
             Bf = "";
 
             Efb = 2141404.0200;
-            Yft = 1.3; Yb = 1.3; Yb1 = 0.9; Yb2 = 0.9; Yb3 = 1; Yb5 = 1;
+            
         }
 
         /// <summary>
