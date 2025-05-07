@@ -63,7 +63,15 @@ namespace BSFiberCore.Models
         public double Rsc { get; set; }
 
         public double Es { get; set; }
+        public double Efb { get; internal set; }
 
+        // коэффициенты надежности
+        public double Yft { get; internal set; }
+        public double Yb { get; internal set; }
+        public double Yb1 { get; internal set; }
+        public double Yb2 { get; internal set; }
+        public double Yb3 { get; internal set; }
+        public double Yb5 { get; internal set; }
 
         public Fiber()
         {
@@ -72,26 +80,16 @@ namespace BSFiberCore.Models
             Bft3 = "";
             Bft = "";
             Bf = "";
+
+            Efb = 2141404.0200;
+            Yft = 1.3; Yb = 1.3; Yb1 = 0.9; Yb2 = 0.9; Yb3 = 1; Yb5 = 1;
         }
 
         /// <summary>
         ///  Расчеты по методу предельных усилий
         /// </summary>
         internal string RunCalc()
-        {
-            double Efb = 2141404.0200;
-
-            double Yft = 1.3, Yb = 1.3, Yb1 =  0.9, Yb2 = 0.9, Yb3 = 1, Yb5 = 1;
-
-            var MatFiber = new BL.Mat.BSMatFiber(Efb, Yft, Yb, Yb1, Yb2, Yb3, Yb5)
-            {
-                B = 30,
-                Rfbt3n = 35.69,
-                Rfbt2n = 39.67,
-                Rfbtn = 30.59,
-                Rfbn = 188.65
-            };
-
+        {                                    
             List<BSFiberReportData> calcResults_MNQ = new List<BSFiberReportData>();
 
             bool use_reinforcement = As > 0 || A1s > 0;
@@ -99,13 +97,13 @@ namespace BSFiberCore.Models
             BSFiberMain fiberMain = new BSFiberMain()
             {
                 UseReinforcement = use_reinforcement,
-                BeamSection = (BeamSection)SectionType,
-                MatFiber = MatFiber
+                BeamSection = (BeamSection)SectionType,                
             };
             
             fiberMain.Fiber = this;
             fiberMain.InitSize();
             fiberMain.InitMaterials();
+            fiberMain.SelectMaterialFromList();
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
 

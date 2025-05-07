@@ -4,6 +4,7 @@ using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Mat;
 using BSFiberCore.Models.BL.Rep;
 using BSFiberCore.Models.BL.Uom;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 
@@ -21,6 +22,12 @@ namespace BSFiberCore.Models.BL
         public Fiber Fiber { get; internal set; }
         public List<string> m_Message { get; private set; }
         public Dictionary<string, double> m_CalcResults2Group { get; private set; }
+
+        private List<Elements> FiberConcrete;
+
+        private List<BSFiberBeton> Bft3Lst;
+        private List<FiberBft> BftnLst;
+        private List<Beton> BfnLst;
 
         public BSFiberMain()
         {
@@ -191,9 +198,123 @@ namespace BSFiberCore.Models.BL
 
         public void InitMaterials()
         {
-            var m_RebarDiameters = BSData.LoadRebarDiameters();
-            var m_Rebar = BSData.LoadRebar();
-            var FiberConcrete = BSData.LoadFiberConcreteTable();
+            List<RebarDiameters>   m_RebarDiameters = BSData.LoadRebarDiameters();
+            List<Rebar>            m_Rebar = BSData.LoadRebar();
+            /*List<Elements>*/     FiberConcrete = BSData.LoadFiberConcreteTable();
+
+            /*List<BSFiberBeton>*/ Bft3Lst =  BSQuery.LoadBSFiberBeton();
+
+            /*List<FiberBft>*/     BftnLst = BSData.LoadFiberBft();
+
+            /*List<Beton>*/        BfnLst = BSData.LoadBetonData(0);           
+        }
+
+        private void SelectedFiberBetonValues(int fib_i, string bft3n,  ref double numRfbt3n, ref double numRfbt2n)
+        {
+            try
+            {
+                var b_i = Convert.ToString(fib_i);
+                BSFiberBeton? beton = Bft3Lst.FirstOrDefault(fbt => fbt.Name == bft3n);
+                if (beton == null)
+                    return;
+
+                string btName = beton.Name.Replace("i", b_i);
+
+                var getQuery = FiberConcrete.Where(f => f.BT == btName);
+                if (getQuery?.Count() > 0)
+                {
+                    Elements? fib = getQuery?.First();
+
+                    numRfbt3n = BSHelper.MPA2kgsm2(fib?.Rfbt3n);
+                    numRfbt2n = BSHelper.MPA2kgsm2(fib?.Rfbt2n);
+                }
+            }
+            catch 
+            {
+                numRfbt3n = 0;
+                numRfbt2n = 0;
+            }
+        }
+
+        private void BftnSelectedValue(string  bft_n, ref double numRfbt_n)
+        {
+            try
+            {
+                FiberBft? bft = BftnLst.FirstOrDefault(bft => bft.ID == bft_n);
+
+                numRfbt_n = BSHelper.MPA2kgsm2(bft?.Rfbtn);
+            }
+            catch 
+            {
+                numRfbt_n = 0;
+            }
+        }
+
+        
+        private void BfnSelectedValue(string bf_n, int _betonTypeId, int _airHumidityId, ref double numRfb_n, ref double numE_beton)
+        {
+            try
+            {                                
+                Beton? bfn = BfnLst.FirstOrDefault(bfn => bfn.BT == bf_n);
+
+                if (bfn != null)
+                {
+                    string betonClass = Convert.ToString(bfn.BT);
+
+                    if (string.IsNullOrEmpty(betonClass)) return;
+
+                    Beton bt = BSQuery.HeavyBetonTableFind(betonClass, _betonTypeId);
+
+                    if (bt.Rbn != 0)
+                        numRfb_n = BSHelper.MPA2kgsm2(bt.Rbn);
+
+                    double fi_b_cr = 0;
+
+                    if (_airHumidityId >= 0 && _airHumidityId <= 3 && bt.B >= 10)
+                    {
+                        int iBClass = (int)Math.Round(bt.B, MidpointRounding.AwayFromZero);
+
+                        fi_b_cr = BSFiberLib.CalcFi_b_cr(_airHumidityId, iBClass);
+                    }
+
+                    if (bt.Eb != 0)
+                    {
+                        double _eb = BSHelper.MPA2kgsm2(bt.Eb * 1000);
+                        numE_beton = _eb / (1.0 + fi_b_cr);
+                    }
+                }
+            }
+            catch {
+                numRfb_n = 0;
+                numE_beton = 0;
+            }
+        }
+
+
+        public void SelectMaterialFromList()
+        {
+            string bft3 = Fiber.Bft3;
+            string bft  = Fiber.Bft;
+            string bf   = Fiber.Bf;
+            double rfbt3n = 35.69, rfbt2n = 39.670;
+            double rfbtn  = 30.59;
+            double rfbn = 188.65;
+            double Eb = 0;
+
+            SelectedFiberBetonValues(1, bft3, ref rfbt3n, ref rfbt2n);
+
+            BftnSelectedValue(bft, ref rfbtn);
+
+            BfnSelectedValue(bf, 0, 1, ref rfbn, ref Eb);
+            
+            MatFiber = new BSMatFiber(Fiber.Efb, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5)
+            {
+                B = 30,
+                Rfbt3n = rfbt3n,
+                Rfbt2n = rfbt2n,
+                Rfbtn  = rfbtn,
+                Rfbn   = rfbn
+            };
         }
 
         /// <summary>
@@ -220,8 +341,8 @@ namespace BSFiberCore.Models.BL
 
                 // расчет по второй группе предельных состояний
                 var FibCalcGR2 = FiberCalculate_Cracking(BSFibCalc.Efforts);
-                reportData.m_Messages.AddRange(FibCalcGR2.Msg);
-                reportData.m_CalcResults2Group = FibCalcGR2.Results();
+                reportData.Messages.AddRange(FibCalcGR2.Msg);
+                reportData.CalcResults2Group = FibCalcGR2.Results();
 
                 return reportData;
             }

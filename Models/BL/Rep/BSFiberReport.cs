@@ -58,7 +58,7 @@ namespace BSFiberCore.Models.BL.Rep
 
         protected BeamSection m_BeamSection { get; set; }
 
-        public LameUnitConverter _unitConverter { get; set; }
+        public LameUnitConverter? _unitConverter { get; set; }
 
         public string ImageCalc { get; set; }
         
@@ -82,10 +82,10 @@ namespace BSFiberCore.Models.BL.Rep
 
         public void InitFromBSFiberReportData(BSFiberReportData _ReportData)
         {
-            Efforts           = _ReportData.m_Efforts;
-            CalcResults1Group = _ReportData.m_CalcResults1Group;
-            CalcResults2Group = _ReportData.m_CalcResults2Group;
-            m_Messages        = _ReportData.m_Messages;
+            Efforts           = _ReportData.Efforts;
+            CalcResults1Group = _ReportData.CalcResults1Group;
+            CalcResults2Group = _ReportData.CalcResults2Group;
+            m_Messages        = _ReportData.Messages;
         }
 
         /// <summary>

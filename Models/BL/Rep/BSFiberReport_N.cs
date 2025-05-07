@@ -31,15 +31,15 @@ namespace BSFiberCore.Models.BL.Rep
         private void InitReportSections(ref BSFiberReport report)
         {
             report.Beam = null;
-            report.Coeffs = m_ReportData.m_Coeffs;
-            report.Efforts = m_ReportData.m_Efforts;
-            report.GeomParams = m_ReportData.m_GeomParams;
-            report.PhysParams = m_ReportData.m_PhysParams;
+            report.Coeffs = m_ReportData.Coeffs;
+            report.Efforts = m_ReportData.Efforts;
+            report.GeomParams = m_ReportData.GeomParams;
+            report.PhysParams = m_ReportData.PhysParams;
             report.Reinforcement = m_ReportData.m_Reinforcement;
-            report.CalcResults1Group = m_ReportData.m_CalcResults1Group;
-            report.CalcResults2Group = m_ReportData.m_CalcResults2Group;
+            report.CalcResults1Group = m_ReportData.CalcResults1Group;
+            report.CalcResults2Group = m_ReportData.CalcResults2Group;
             report.ImageStream = m_ReportData.ImageStream;
-            report.Messages = m_ReportData.m_Messages;
+            report.Messages = m_ReportData.Messages;
             report._unitConverter = m_ReportData.UnitConverter;
             report.UseReinforcement = m_ReportData.UseReinforcement;
         }

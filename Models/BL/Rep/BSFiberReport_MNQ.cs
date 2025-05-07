@@ -46,16 +46,16 @@ namespace BSFiberCore.Models.BL.Rep
             {
                 BeamSection       = m_BeamSection,
                 UseReinforcement  = UseReinforcement,
-                m_Coeffs          = m_Coeffs,
-                m_Efforts         = m_Efforts,
-                m_GeomParams      = m_GeomParams,
-                m_Messages        = m_Messages,
-                m_PhysParams      = m_PhysParams,
+                Coeffs            = m_Coeffs,
+                Efforts           = m_Efforts,
+                GeomParams      = m_GeomParams,
+                Messages          = m_Messages,
+                PhysParams      = m_PhysParams,
                 UnitConverter     = _unitConverter,
                 // результат расчета по первой группе предельных состояний
-                m_CalcResults1Group = m_CalcResults1Group,
+                CalcResults1Group = m_CalcResults1Group,
                 // результат расчета по второй группе предельных состояний
-                m_CalcResults2Group = m_CalcResults2Group
+                CalcResults2Group = m_CalcResults2Group
             };
 
             return data;
