@@ -1,14 +1,37 @@
 ﻿<H1>Сопротивление сечения из фибробетона</H1>
 <H4>Расчет выполнен по </H4>
-<H2>Сечение балки: Cечение произвольное</H2>
+<H2>Сечение балки: Прямоугольное сечение</H2>
 <table><tr><td> <img src="data:image/png;base64, " alt = "section.png" / width="500" height="300"> </td></tr> </table>
 <Table border=1 bordercolor = darkblue>
 <caption>Геометрия сечения</caption>
+<tr>
+<td width=800><b>Ширина сечения, [см]</b></td>
+<td width=200 align=center>60</td>
+</tr>
+<tr>
+<td width=800><b>Высота сечения, [см]</b></td>
+<td width=200 align=center>30</td>
+</tr>
 </tr>
 </Table>
 <br>
 <Table border=1 bordercolor = darkblue>
 <caption>Физические характеристики</caption>
+<tr>
+<td width=800>Сопротивление сталефибробетона осевому растяжению, Rfbt, [кг/см2]</td>
+<td width=200 align=center>19.0608 </td>
+<td width=200 align=center>1.87 МПа </td>
+</tr>
+<tr>
+<td width=800>Числовая характеристика класса фибробетона по прочности на осевое сжатие, B</td>
+<td width=200 align=center>30 </td>
+<td width=200 align=center> </td>
+</tr>
+<tr>
+<td width=800>Коэффициент, учитывающий неупругие свойства фибробетона растянутой зоны</td>
+<td width=200 align=center>1.655 </td>
+<td width=200 align=center> </td>
+</tr>
 </Table>
 <br>
 <Table border=1 bordercolor = darkblue>
@@ -17,17 +40,49 @@
 <br>
 <Table border=1 bordercolor = darkblue>
 <caption>Коэффициенты</caption>
+<tr>
+<td width=800>Yft</td>
+<td width=200 align=center>1.3 </td>
+</tr>
+<tr>
+<td width=800>Yb1</td>
+<td width=200 align=center>0.9 </td>
+</tr>
+<tr>
+<td width=800>Yb5</td>
+<td width=200 align=center>0.9 </td>
+</tr>
 </Table>
 <br>
 <H2>Расчет по комбинации загружений: 1</H2>
 <Table border=1 bordercolor = darkblue>
 <caption>Усилия</caption>
+<tr>
+<td width=800>My, [кг*см] </td>
+<td width=200 align=center>1000 </td>
+<td width=200 align=center>10000 кг*мм </td>
+</tr>
 </Table>
 <br>
 Расчет:
 <H3>Расчет по 1-й группе предельных состояний:</H3>
 <Table border=1 bordercolor = darkblue>
 <tr>
+<tr>
+<td width=800>Упругопластический момент сопротивления</td>
+<td width=200 align=center colspan=2 >14895 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>Предельный момент сечения для изгибаемых сталефибробетонных элементов, [кг*см]</td>
+<td width=200 align=center colspan=2 >283911.345397 </td>
+<td width=200 align=center colspan=2>2784.22 Кн*см </td>
+</tr>
+<tr>
+<td width=800>Коэффициент использования по усилию, [П6.1.7 П6.1.8]</td>
+<td width=200 align=center colspan=2 bgcolor="#33CC00 ">0.003522 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
 </tr>
 </Table>
 <br>
@@ -39,6 +94,12 @@
 <br>
 <Table border=1 bordercolor = darkblue>
 <caption>Итог:</caption>
+<tr>
+<td width=800>| Сечение прошло проверку на действие изгибающего момента. </td>
+</tr>
+<tr>
+<td width=800>| Расчет успешно выполнен! </td>
+</tr>
 <tr>
 <td width=800>| Для получения результатов по предельным состояниям второй группы необходимо задать площадь арматуры. </td>
 </tr>

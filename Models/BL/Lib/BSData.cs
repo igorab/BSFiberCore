@@ -21,7 +21,9 @@ namespace BSFiberCore.Models.BL.Lib
 
         public static string DataPath(string _file)  => Path.Combine(Environment.CurrentDirectory, "Data", _file);
 
-        public static readonly string connectionString = "Data Source =C:\\Work\\BSFiberCore\\Models\\BL\\Data\\Fiber.db; Version = 3;";//"Data Source =.\\Data\\Fiber.db; Version = 3;"
+        public static readonly string connectionString = "Data Source = " + 
+                Path.Combine(Environment.CurrentDirectory, "Models\\BL\\Data\\Fiber.db") + 
+                    "; Version = 3;";
 
         public static bool Connect()
         {

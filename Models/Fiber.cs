@@ -30,13 +30,16 @@ namespace BSFiberCore.Models
         public double R2 { get; set; }
         public double R1 { get; set; }
 
-
         // класс бетона
+        public string BetonType { get; set; }
+
+        public string BetonIndex { get; set; }
+
         public string Bft3 { get; set; }
 
         public string Bft { get; set; }
 
-        public string Bf { get; set; }
+        public string Bfb { get; set; }
 
         // усилия внешние
         public double My { get; set; }
@@ -79,7 +82,7 @@ namespace BSFiberCore.Models
             FiberAns = "";
             Bft3 = "";
             Bft = "";
-            Bf = "";
+            Bfb = "";
 
             Efb = 2141404.0200;
             

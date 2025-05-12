@@ -110,28 +110,53 @@
     </div>
 
     <h4>Характеристики бетона</h4>
-    <br>    
+    <br>
+    <div>
+        <label>Тип бетона:</label>
+        <input asp-for="BetonType" type="text" list="options_betontype" value="Тяжелый" required />
+        <datalist id="options_betontype">
+            <option value="Тяжелый">Тяжелый</option>
+            <option value="Мелкозернистый">Мелкозернистый</option>
+            <option value="Легкий">Легкий</option>
+        </datalist>
+        <label>Индекс подкласса:</label>
+        <input asp-for="BetonIndex" type="text" list="options_betonindex" value="a" required />
+        <datalist id="options_betonindex">
+            <option value="a">a</option>
+            <option value="b">b</option>
+            <option value="c">c</option>
+            <option value="d">d</option>
+            <option value="e">e</option>
+        </datalist>
+    </div>
+    <br>
     <div>
         <label>Класс бетона на растяжение Bft3:</label>
-        <input asp-for="Bft3" type="text" list="options"  value="B3i" required />
-        <datalist id="options">
+        <input asp-for="Bft3" type="text" list="options_bft3"  value="B3i" required />
+        <datalist id="options_bft3">
             <option value="B1i">B1i</option>
             <option value="B1,5i">B1,5i</option>
             <option value="B2i">B2i</option>
             <option value="B2,5i">B2,5i</option>
-            <option value="B2,5i">B3i</option>
+            <option value="B3i">B3i</option>
         </datalist>
     </div>
     <br>
     <div>
         <label>Класс бетона на растяжение Bft:</label>
-        <input asp-for="Bft" type="text" list="options1" value="B3" required />
-        <datalist id="options1">
-            <option value="B1">B1</option>
-            <option value="B1,5">B1,5</option>
-            <option value="B2">B2</option>
-            <option value="B2,5">B2,5</option>
-            <option value="B2,5">B3</option>
+        <input asp-for="Bft" type="text" list="options_bft" value="Bft3" required />
+        <datalist id="options_bft">
+            <option value="Bft1">Bft1</option>
+            <option value="Bft1,5">Bft1,5</option>
+            <option value="Bft2">Bft2</option>
+            <option value="Bft2,5">Bft2,5</option>            
+            <option value="Bft3">Bft3</option>
+            <option value="Bft3,5">Bft3,5</option>
+            <option value="Bft4">Bft4</option>
+            <option value="Bft4,5">Bft4,5</option>
+            <option value="Bft5">Bft5</option>
+            <option value="Bft5,5">Bft5,5</option>
+            <option value="Bft6">Bft6</option>            
         </datalist>
 
     </div>
@@ -139,11 +164,15 @@
     <br>
     <div>
         <label>Класс бетона на сжатие Bf:</label>
-        <input asp-for="Bf" type="text" list="options2" value="B30" required />
-        <datalist id="options2">
+        <input asp-for="Bfb" type="text" list="options_bf" value="B30" required />
+        <datalist id="options_bf">
+            <option value="B12.5">B12.5</option>
+            <option value="B15">B15</option>
             <option value="B20">B20</option>
             <option value="B25">B25</option>
             <option value="B30">B30</option>
+            <option value="B35">B35</option>
+            <option value="B40">B40</option>
         </datalist>
     </div>    
     <br>

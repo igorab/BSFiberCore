@@ -209,7 +209,7 @@ namespace BSFiberCore.Models.BL
             /*List<Beton>*/        BfnLst = BSData.LoadBetonData(0);           
         }
 
-        private void SelectedFiberBetonValues(int fib_i, string bft3n,  ref double numRfbt3n, ref double numRfbt2n)
+        private void SelectedFiberBetonValues(string fib_i, string bft3n,  ref double numRfbt3n, ref double numRfbt2n)
         {
             try
             {
@@ -250,8 +250,16 @@ namespace BSFiberCore.Models.BL
             }
         }
 
-        
-        private void BfnSelectedValue(string bf_n, int _betonTypeId, int _airHumidityId, ref double numRfb_n, ref double numE_beton)
+        /// <summary>
+        /// выбрать по классу бетона на сжатие
+        /// </summary>
+        /// <param name="bf_n"></param>
+        /// <param name="_betonTypeId">тип: тяжелый / легкий</param>
+        /// <param name="_airHumidityId">влажность</param>
+        /// <param name="numRfb_n"></param>
+        /// <param name="numE_beton"></param>
+        /// <param name="B_class"></param>
+        private void BfnSelectedValue(string bf_n, int _betonTypeId, int _airHumidityId, ref double numRfb_n, ref double numE_beton, ref double B_class)
         {
             try
             {                                
@@ -260,6 +268,7 @@ namespace BSFiberCore.Models.BL
                 if (bfn != null)
                 {
                     string betonClass = Convert.ToString(bfn.BT);
+                    B_class = bfn.B;
 
                     if (string.IsNullOrEmpty(betonClass)) return;
 
@@ -284,32 +293,34 @@ namespace BSFiberCore.Models.BL
                     }
                 }
             }
-            catch {
+            catch 
+            {
                 numRfb_n = 0;
                 numE_beton = 0;
+                B_class = 0;
             }
         }
 
-
+        /// <summary>
+        ///  классы материала
+        /// </summary>
         public void SelectMaterialFromList()
-        {
-            string bft3 = Fiber.Bft3;
-            string bft  = Fiber.Bft;
-            string bf   = Fiber.Bf;
-            double rfbt3n = 35.69, rfbt2n = 39.670;
-            double rfbtn  = 30.59;
-            double rfbn = 188.65;
+        {                                 
+            double rfbt3n = 0, rfbt2n = 0;
+            double rfbtn  = 0;
+            double rfbn = 0;
             double Eb = 0;
+            double Bclass = 0;
 
-            SelectedFiberBetonValues(1, bft3, ref rfbt3n, ref rfbt2n);
+            SelectedFiberBetonValues(Fiber.BetonIndex, Fiber.Bft3, ref rfbt3n, ref rfbt2n);
 
-            BftnSelectedValue(bft, ref rfbtn);
+            BftnSelectedValue(Fiber.Bft, ref rfbtn);
 
-            BfnSelectedValue(bf, 0, 1, ref rfbn, ref Eb);
+            BfnSelectedValue(Fiber.Bfb, 0, 1, ref rfbn, ref Eb, ref Bclass);
             
             MatFiber = new BSMatFiber(Fiber.Efb, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5)
             {
-                B = 30,
+                B = Bclass,
                 Rfbt3n = rfbt3n,
                 Rfbt2n = rfbt2n,
                 Rfbtn  = rfbtn,
