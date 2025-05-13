@@ -62,7 +62,7 @@ namespace BSFiberCore.Models.BL.Rep
 
         public string ImageCalc { get; set; }
         
-        public MemoryStream ImageStream {  get; set; }
+        public MemoryStream? ImageStream {  get; set; }
 
         public BSFiberReport()
         {

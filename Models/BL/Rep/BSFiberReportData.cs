@@ -20,7 +20,7 @@ namespace BSFiberCore.Models.BL.Rep
         public BeamSection BeamSection { get; set; }
         public LameUnitConverter? UnitConverter { get; set; }
         public string ImageCalc { get; set; }
-        public MemoryStream ImageStream {  get; set; }
+        public MemoryStream? ImageStream {  get; set; }
 
         public BSFiberReportData()
         {
@@ -34,7 +34,7 @@ namespace BSFiberCore.Models.BL.Rep
             CalcResults2Group = [];
             m_Reinforcement = [];
             m_Path2BeamDiagrams = [];
-            ImageStream = new MemoryStream();
+            ImageStream = null;
             ImageCalc = "";
         }
 
