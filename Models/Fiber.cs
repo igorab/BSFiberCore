@@ -11,6 +11,8 @@ namespace BSFiberCore.Models
 {
     public class Fiber
     {
+        #region userparams
+        
         public int Id { get; set; }
         public string FiberQ { get; set; }        
         public string FiberAns { get; set; }
@@ -76,6 +78,8 @@ namespace BSFiberCore.Models
         public double Yb3 { get;  set; }
         public double Yb5 { get;  set; }
 
+        #endregion
+
         public Fiber()
         {
             FiberQ = "";
@@ -83,15 +87,17 @@ namespace BSFiberCore.Models
             Bft3 = "";
             Bft = "";
             Bfb = "";
-
-            Efb = 2141404.0200;
-            
+            BetonType = "";
+            BetonIndex = "";
+            A_Rs = "";
+            A_Rsc = "";
+            Efb = 2141404.0200;            
         }
 
         /// <summary>
         ///  Расчеты по методу предельных усилий
         /// </summary>
-        internal string RunCalc()
+        public string RunCalc()
         {                                    
             List<BSFiberReportData> calcResults_MNQ = new List<BSFiberReportData>();
 
@@ -177,6 +183,11 @@ namespace BSFiberCore.Models
             // расчет по наклонной полосе на действие момента [6.1.7]
             string htmlcontent = BSFiberReport_M.RunMultiReport(calcResults_MNQ);
             return htmlcontent;
+        }
+
+        public string RunCalcNDM()
+        {
+            return "";
         }
     }
 }

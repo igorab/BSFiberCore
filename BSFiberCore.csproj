@@ -26,4 +26,13 @@
     <None Include="wwwroot\Resources\СК1.jpg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Triangle">
+      <HintPath>Tri\Triangle.dll</HintPath>
+    </Reference>
+    <Reference Include="Triangle.Rendering">
+      <HintPath>Tri\Triangle.Rendering.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
