@@ -1,11 +1,10 @@
-﻿
-using BSFiberCore.Models.BL;
+﻿using BSFiberCore.Models.BL;
 using BSFiberCore.Models.BL.Beam;
 using BSFiberCore.Models.BL.Calc;
 using BSFiberCore.Models.BL.Lib;
+using BSFiberCore.Models.BL.Ndm;
 using BSFiberCore.Models.BL.Rep;
-using NuGet.Protocol.Plugins;
-using System.Drawing.Text;
+using TriangleNet.Geometry;
 
 namespace BSFiberCore.Models
 {
@@ -187,7 +186,88 @@ namespace BSFiberCore.Models
 
         public string RunCalcNDM()
         {
+            try
+            {
+                //m_SectionChart.RedrawSection();
+
+                List<BSCalcResultNDM> calcResults = new List<BSCalcResultNDM>();
+
+                GetEffortsFromForm(out List<Dictionary<string, double>> lstMNQ);
+
+                if (!ValidateNDMCalc(lstMNQ))
+                    return "Err";
+
+                var beamSection = (BeamSection)SectionType;
+                foreach (Dictionary<string, double> efforts in lstMNQ)
+                {
+                    
+                    TriangleNet.Geometry.Point CG = new TriangleNet.Geometry.Point(0, 0);
+                    BSCalcResultNDM calcRes = null;
+                   
+                    if (beamSection == BeamSection.Rect)
+                    {
+                        calcRes = CalcNDM(BeamSection.Rect);
+                    }
+                    else if (BSHelper.IsITL(beamSection))
+                    {
+                        calcRes = CalcNDM(beamSection);
+                    }
+                    else if (beamSection == BeamSection.Ring)
+                    {
+                        GenerateMesh(ref CG);
+                        calcRes = CalcNDM(BeamSection.Ring);
+                    }
+                    else if (beamSection == BeamSection.Any)
+                    {
+                        //m_SectionChart.GenerateMesh(_beamSectionMeshSettings.MaxArea);
+
+                        calcRes = CalcNDM(BeamSection.Any);
+                    }
+
+                    if (calcRes != null)
+                    {
+                        //calcRes.ImageStream = m_SectionChart.GetImageStream;
+                        //calcResults.Add(calcRes);
+                    }
+                }
+
+                //CreatePictureForHeaderReport(calcResults);
+                //CreatePictureForBodyReport(calcResults);
+
+                // формирование отчета
+                BSReport.RunReport(beamSection, calcResults);
+
+            }
+            catch (Exception _e)
+            {
+                MessageBox.Show(_e.Message);
+            }
+
+
+
             return "";
+        }
+
+        private void GenerateMesh(ref Point cG)
+        {
+            throw new NotImplementedException();
+        }
+
+        private BSCalcResultNDM CalcNDM(BeamSection any)
+        {
+            return null;
+        }
+
+        private bool ValidateNDMCalc(List<Dictionary<string, double>> lstMNQ)
+        {
+            return true;
+        }
+
+        private void GetEffortsFromForm(out List<Dictionary<string, double>> lstMNQ)
+        {
+            Dictionary<string, double> tmpEfforts = new Dictionary<string, double>();
+
+            lstMNQ = new List<Dictionary<string, double>> { tmpEfforts };           
         }
     }
 }

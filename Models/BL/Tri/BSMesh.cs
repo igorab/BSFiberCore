@@ -14,7 +14,7 @@ namespace BSFiberCore.Models.BL.Tri
         public static int Ny { get; set; }
         public static double MinAngle { get; set; }
         public static double MaxArea { get; set; }
-        public static Mesh Mesh { get; set; }
+        public static Mesh? Mesh { get; set; }
         public static Point Center { get; set; }
         public static string FilePath { get; set; }
 
