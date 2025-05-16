@@ -4,6 +4,8 @@ using BSFiberCore.Models.BL.Calc;
 using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Ndm;
 using BSFiberCore.Models.BL.Rep;
+using BSFiberCore.Models.BL.Sec;
+using BSFiberCore.Models.BL.Tri;
 using TriangleNet.Geometry;
 
 namespace BSFiberCore.Models
@@ -200,7 +202,12 @@ namespace BSFiberCore.Models
         {
             try
             {
-                //m_SectionChart.RedrawSection();
+                BSFiberMain fiberMain = new BSFiberMain()
+                {                    
+                    BeamSection = (BeamSection)SectionType,
+                };
+
+                BSSectionChart SectionChart = new BSSectionChart();
 
                 List<BSCalcResultNDM> calcResults = new List<BSCalcResultNDM>();
 
@@ -218,22 +225,23 @@ namespace BSFiberCore.Models
                    
                     if (beamSection == BeamSection.Rect)
                     {
-                        calcRes = CalcNDM(BeamSection.Rect);
+                        calcRes = fiberMain.CalcNDM(BeamSection.Rect);
                     }
                     else if (BSHelper.IsITL(beamSection))
                     {
-                        calcRes = CalcNDM(beamSection);
+                        calcRes = fiberMain.CalcNDM(beamSection);
                     }
                     else if (beamSection == BeamSection.Ring)
                     {
-                        GenerateMesh(ref CG);
-                        calcRes = CalcNDM(BeamSection.Ring);
+                        fiberMain.GenerateMesh(ref CG);
+                        calcRes = fiberMain.CalcNDM(BeamSection.Ring);
                     }
                     else if (beamSection == BeamSection.Any)
                     {
-                        //m_SectionChart.GenerateMesh(_beamSectionMeshSettings.MaxArea);
+                        MeshSectionSettings meshSettings = new MeshSectionSettings();
+                        SectionChart.GenerateMesh(meshSettings.MaxArea);
 
-                        calcRes = CalcNDM(BeamSection.Any);
+                        calcRes = fiberMain.CalcNDM(BeamSection.Any);
                     }
 
                     if (calcRes != null)
@@ -255,21 +263,9 @@ namespace BSFiberCore.Models
                 MessageBox.Show(_e.Message);
             }
 
-
-
             return "";
         }
-
-        private void GenerateMesh(ref Point cG)
-        {
-            
-        }
-
-        private BSCalcResultNDM CalcNDM(BeamSection any)
-        {
-            return null;
-        }
-
+                
         private bool ValidateNDMCalc(List<Dictionary<string, double>> lstMNQ)
         {
             return true;

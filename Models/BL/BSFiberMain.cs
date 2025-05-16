@@ -4,8 +4,11 @@ using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Mat;
 using BSFiberCore.Models.BL.Ndm;
 using BSFiberCore.Models.BL.Rep;
+using BSFiberCore.Models.BL.Sec;
+using BSFiberCore.Models.BL.Tri;
 using BSFiberCore.Models.BL.Uom;
 using System.Data;
+using System.Drawing;
 
 namespace BSFiberCore.Models.BL
 {
@@ -13,6 +16,8 @@ namespace BSFiberCore.Models.BL
     {
         private BSFiberCalculation BSFibCalc;
         private LameUnitConverter _UnitConverter;
+        private MeshSectionSettings _beamSectionMeshSettings { get; set; }
+
         private double[] sz;
 
         public bool UseReinforcement { get; set; } = false;
@@ -28,9 +33,18 @@ namespace BSFiberCore.Models.BL
         private List<FiberBft> BftnLst;
         private List<Beton> BfnLst;
 
+        BSSectionChart SectionChart;
+
+        // Mesh generation
+        // площади элементов (треугольников)
+        private List<double> triAreas;
+        // координаты центра тяжести элементов (треугольников)
+        private List<TriangleNet.Geometry.Point> triCGs;
+
         public BSFiberMain()
         {
             _UnitConverter = new LameUnitConverter();
+            SectionChart = new BSSectionChart();
         }
 
         /// <summary>
@@ -607,7 +621,7 @@ namespace BSFiberCore.Models.BL
         /// </summary>
         /// <param name="_beamSection">Тип сечения</param>
         /// <returns></returns>
-        private BSCalcResultNDM CalcNDM(BeamSection _beamSection)
+        public BSCalcResultNDM CalcNDM(BeamSection _beamSection)
         {            
             double[] sz = BeamSizes(/*length*/);
 
@@ -663,6 +677,77 @@ namespace BSFiberCore.Models.BL
 
             return calcRes;
         }
+
+        /// <summary>
+        /// Покрыть сечение сеткой
+        /// </summary>
+        public string GenerateMesh(ref TriangleNet.Geometry.Point _CG)
+        {
+            string pathToSvgFile;
+            double[] sz = BeamWidtHeight(out double b, out double h, out double area);
+
+            BSMesh.Nx = _beamSectionMeshSettings.NX;
+            BSMesh.Ny = _beamSectionMeshSettings.NY;
+            BSMesh.MinAngle = _beamSectionMeshSettings.MinAngle;
+            Tri.Tri.MinAngle = _beamSectionMeshSettings.MinAngle;
+            BSMesh.MaxArea = _beamSectionMeshSettings.MaxArea;
+
+            BSMesh.FilePath = Path.Combine(Environment.CurrentDirectory, "Templates");
+            Tri.Tri.FilePath = BSMesh.FilePath;
+
+            if (BeamSection == BeamSection.Rect)
+            {
+                List<double> rect = new List<double> { 0, 0, b, h };
+
+                pathToSvgFile = BSMesh.GenerateRectangle(rect);
+                Tri.Tri.Mesh  = BSMesh.Mesh;
+                // сместить начало координат из левого нижнего угла в центр тяжести
+                Tri.Tri.Oxy = _CG;
+
+                _ = Tri.Tri.CalculationScheme();
+            }
+            else if (BSHelper.IsITL(BeamSection))
+            {
+                List<PointF> pts;
+                BSSection.IBeam(sz, out pts, out PointF _center, out PointF _left);
+                _CG = new TriangleNet.Geometry.Point(_center.X, _center.Y);
+
+                pathToSvgFile = Tri.Tri.CreateSectionContour(pts, BSMesh.MaxArea);
+                _ = Tri.Tri.CalculationScheme();
+            }
+            else if (BeamSection == BeamSection.Ring)
+            {
+                _CG = new TriangleNet.Geometry.Point(0, 0);
+
+                double r = sz[0];
+                double R = sz[1];
+
+                if (r > R)
+                    throw BSBeam_Ring.RadiiError();
+
+                BSMesh.Center = _CG;
+                pathToSvgFile = BSMesh.GenerateRing(R, r, true);
+
+                Tri.Tri.Mesh = BSMesh.Mesh;
+                _ = Tri.Tri.CalculationScheme();
+            }
+            else if (BeamSection == BeamSection.Any)
+            {
+                pathToSvgFile = SectionChart.GenerateMesh(BSMesh.MaxArea);
+            }
+            else
+            {
+                throw new Exception("Не задано сечение");
+            }
+
+            // площади треугольников
+            triAreas = Tri.Tri.triAreas;
+            // центры тяжести треугольников
+            triCGs = Tri.Tri.triCGs;
+
+            return pathToSvgFile;
+        }
+
 
         private Dictionary<string, double>? FiberCalculateGroup2(object calcRes)
         {
