@@ -13,6 +13,7 @@ namespace BSFiberCore.Models
         #region userparams
         
         public int Id { get; set; }
+        public int CalcType { get; set; } // 0 -static_eq 1 - ndm 
         public string FiberQ { get; set; }        
         public string FiberAns { get; set; }
 
@@ -90,14 +91,25 @@ namespace BSFiberCore.Models
             BetonIndex = "";
             A_Rs = "";
             A_Rsc = "";
-            Efb = 2141404.0200;            
+            Efb = 2141404.0200;
+            CalcType = 1;
         }
 
         /// <summary>
         ///  Расчеты по методу предельных усилий
         /// </summary>
         public string RunCalc()
-        {                                    
+        {
+            if (CalcType == 0)
+                return RunCalcStaticEq();
+            else if (CalcType == 1)
+                return RunCalcNDM();
+            else
+                return "";
+        }
+
+        private string RunCalcStaticEq()
+        {
             List<BSFiberReportData> calcResults_MNQ = new List<BSFiberReportData>();
 
             bool use_reinforcement = As > 0 || A1s > 0;
@@ -105,9 +117,9 @@ namespace BSFiberCore.Models
             BSFiberMain fiberMain = new BSFiberMain()
             {
                 UseReinforcement = use_reinforcement,
-                BeamSection = (BeamSection)SectionType,                
+                BeamSection = (BeamSection)SectionType,
             };
-            
+
             fiberMain.Fiber = this;
             fiberMain.InitSize();
             fiberMain.InitMaterials();
@@ -115,7 +127,7 @@ namespace BSFiberCore.Models
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
 
-            Dictionary<string, double> mnq = new Dictionary<string, double>() {["My"]= My, ["N"] = N, ["Qx"] = Qx};
+            Dictionary<string, double> mnq = new Dictionary<string, double>() { ["My"] = My, ["N"] = N, ["Qx"] = Qx };
 
             double Mc_ult, UtilRate_Mc;
             double N_ult, UtilRate_N;
@@ -250,7 +262,7 @@ namespace BSFiberCore.Models
 
         private void GenerateMesh(ref Point cG)
         {
-            throw new NotImplementedException();
+            
         }
 
         private BSCalcResultNDM CalcNDM(BeamSection any)

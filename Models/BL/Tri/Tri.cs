@@ -6,7 +6,6 @@ using TriangleNet.Rendering.Text;
 using TriangleNet.Tools;
 using TriangleNet.Topology;
 
-
 namespace BSFiberCore.Models.BL.Tri
 {
     public abstract class Tri
@@ -62,8 +61,6 @@ namespace BSFiberCore.Models.BL.Tri
             
             return (bounds.Left, bounds.Bottom, bounds.Right, bounds.Top);
         }
-
-
 
         /// <summary>
         ///  Центр тяжести

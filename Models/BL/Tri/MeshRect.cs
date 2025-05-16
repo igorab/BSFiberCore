@@ -4,8 +4,8 @@ namespace BSFiberCore.Models.BL.Tri
 {
     public class MeshRect
     {
-        private int ny;
-        private int nz;
+        private readonly int ny;
+        private readonly int nz;
 
         private List<double> Ab;
         private List<double> y0b;

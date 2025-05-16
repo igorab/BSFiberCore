@@ -2,11 +2,10 @@
 using BSFiberCore.Models.BL.Calc;
 using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Mat;
+using BSFiberCore.Models.BL.Ndm;
 using BSFiberCore.Models.BL.Rep;
 using BSFiberCore.Models.BL.Uom;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
-
 
 namespace BSFiberCore.Models.BL
 {
@@ -385,6 +384,294 @@ namespace BSFiberCore.Models.BL
                 //TODO refactoring
                 _bsCalcRods.GetLTRebar(matRod);
             }
+        }
+
+        private Dictionary<string, double> DictCalcParams(BeamSection _beamSection)
+        {
+            Dictionary<string, double> MNQ = new Dictionary<string, double>();
+
+            double numYft=0, numYb = 0, numYb1 = 0, numYb2 = 0, numYb3 = 0, numYb5 = 0;
+            double numE_beton = 0, numE_fbt = 0;
+            double numRfb_n = 0, numRfbt_n = 0, numRfbt2n = 0, numRfbt3n = 0;
+
+            double numEs = 0;
+            // нормативные 
+            double numRscn = 0;
+            double numRsn = 0;
+            // расчетные
+            double numRsc = 0;
+            double numRs = 0;
+            // деформации                
+            double numEps_s_ult = 0;
+
+            BSMatFiber mf = new BSMatFiber(numE_beton, numYft, numYb, numYb1, numYb2, numYb3, numYb5);
+            mf.Rfbn = numRfb_n;
+            mf.Rfbtn = numRfbt_n;
+            mf.Rfbt2n = numRfbt2n;
+            mf.Rfbt3n = numRfbt3n;
+
+            double lgth, coeflgth;
+            (lgth, coeflgth) = (0, 0); // BeamLength();
+
+            Dictionary<string, double> D = new Dictionary<string, double>()
+            {
+                // enforces
+                ["N"]  = MNQ.ContainsKey("N") ? -MNQ["N"] : 0,
+                ["My"] = MNQ.ContainsKey("My") ? MNQ["My"] : 0,
+                ["Mz"] = MNQ.ContainsKey("Mx") ? MNQ["Mx"] : 0,
+                ["Qx"] = MNQ.ContainsKey("Qx") ? MNQ["Qx"] : 0,
+                ["Qy"] = MNQ.ContainsKey("Qy") ? MNQ["Qy"] : 0,
+                //
+                //length
+                ["lgth"] = lgth,
+                ["coeflgth"] = coeflgth,
+                //
+                //section size
+                ["b"] = 0,
+                ["h"] = 0,
+
+                ["bf"] = 0,
+                ["hf"] = 0,
+                ["bw"] = 0,
+                ["hw"] = 0,
+                ["b1f"] = 0,
+                ["h1f"] = 0,
+
+                ["r1"] = 0,
+                ["R2"] = 0,
+                //
+                //Mesh
+                ["ny"] = 0, //_beamSectionMeshSettings.NY,
+                ["nz"] = 0, //_beamSectionMeshSettings.NX, // в алгоритме плосткость сечения YOZ
+
+                // beton
+                ["Eb0"] = numE_beton, // сжатие
+                ["Ebt"] = numE_fbt, // растяжение
+
+                // - нормативные
+                ["Rbcn"]  = numRfb_n,
+                ["Rbtn"]  = numRfbt_n,
+                ["Rbt2n"] = numRfbt2n,
+                ["Rbt3n"] = numRfbt3n,
+                // - расчетные 
+                ["Rbc"]  = mf.Rfb,
+                ["Rbt"]  = mf.Rfbt,
+                ["Rbt2"] = mf.Rfbt2,
+                ["Rbt3"] = mf.Rfbt3,
+                // - деформации
+                // сжатие
+                ["ebc0"]   = 0,
+                ["ebc2"]   = 0.0035d,
+                ["eb_ult"] = 0.0035d,
+
+                // растяжение
+                ["ebt0"] = 0,
+                ["ebt1"] = 0,
+                ["ebt2"] = 0,
+                ["ebt3"] = 0,
+                ["ebt_ult"] = 0.015d,
+                // арматура steel                
+                ["Es0"] = numEs,
+                // нормативные 
+                ["Rscn"] = numRscn,
+                ["Rstn"] = numRsn,
+                // расчетные
+                ["Rsc"] = numRsc,
+                ["Rst"] = numRs,
+                // деформации
+                ["esc2"] = 0,
+                ["est2"] = 0,
+                ["es_ult"] = numEps_s_ult,
+                // коэффициенты надежности
+                ["Yft"] = numYft,
+                ["Yb"]  = numYb,
+                ["Yb1"] = numYb1,
+                ["Yb2"] = numYb2,
+                ["Yb3"] = numYb3,
+                ["Yb5"] = numYb5
+            };
+
+            double[] beam_sizes = BeamSizes();
+
+            double b = 0;
+            double h = 0;
+
+            if (_beamSection == BeamSection.Rect)
+            {
+                b = beam_sizes[0];
+                h = beam_sizes[1];
+            }
+            else if (BSHelper.IsITL(_beamSection))
+            {
+                D["bf"] = beam_sizes[0];
+                D["hf"] = beam_sizes[1];
+                D["bw"] = beam_sizes[2];
+                D["hw"] = beam_sizes[3];
+                D["b1f"] = beam_sizes[4];
+                D["h1f"] = beam_sizes[5];
+
+                b = D["bf"];
+                h = D["hf"] + D["hw"] + D["h1f"];
+            }
+            else if (_beamSection == BeamSection.Ring)
+            {
+                D["r1"] = beam_sizes[0];
+                D["R2"] = beam_sizes[1];
+
+                b = 2 * D["R2"];
+                h = 2 * D["R2"];
+            }
+
+            D["b"] = b;
+            D["h"] = h;
+
+            return D;
+        }
+
+        private void InitStrengthFactorsFromForm(double[] prms)
+        {
+            int idx = -1;
+            if (prms.Length >= 8)
+            {
+                prms[++idx] = 0; // Convert.ToDouble(numRfbt3n.Value);
+                prms[++idx] = 0; // Convert.ToDouble(numRfb_n.Value);
+                prms[++idx] = Fiber.Yft;
+                prms[++idx] = Fiber.Yb;
+                prms[++idx] = Fiber.Yb1;
+                prms[++idx] = Fiber.Yb2;
+                prms[++idx] = Fiber.Yb3;
+                prms[++idx] = Fiber.Yb5;
+                prms[++idx] = 0;
+            }
+        }
+
+        private Dictionary<string, double> FiberCalculate_QxQy(Dictionary<string, double> _MNQ, double[] _sz)
+        {
+            double[] prms = new double[9];
+
+            InitStrengthFactorsFromForm(prms);
+
+            BSMatFiber fiber = new BSMatFiber(Fiber.Efb, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5);
+            
+            var betonType = BSQuery.BetonTypeFind(0);
+
+            BSFiberCalc_QxQy fiberCalc = new BSFiberCalc_QxQy();
+            fiberCalc.MatFiber = MatFiber;
+            fiberCalc.UseRebar = true;// UseRebar;
+            fiberCalc.Rebar = null;// m_SectionChart.Rebar; // поперечная амрматура из полей в контроле m_SectionChart
+            fiberCalc.BetonType = betonType;
+            fiberCalc.UnitConverter = _UnitConverter;
+            // fiberCalc.SetFiberFromLoadData(fiber);
+            fiberCalc.SetSize(_sz);
+            fiberCalc.SetParams(prms);
+            fiberCalc.SetEfforts(_MNQ);
+            fiberCalc.SetN_Out();
+
+            bool calcOk = fiberCalc.Calculate();
+
+            if (calcOk)
+                fiberCalc.Msg.Add("Расчет успешно выполнен!");
+            else
+                fiberCalc.Msg.Add("Расчет по наклонному сечению на действие Q не выполнен!");
+
+            Dictionary<string, double> xR = fiberCalc.Results();
+
+            return xR;
+        }
+
+
+        /// <summary>
+        /// Расчет на действие поперечных сил действующих по двум направлениям
+        /// </summary>
+        private Dictionary<string, double> CalcQxQy(double[] sz)
+        {
+            //SetFiberMaterialProperties();
+
+            //RecalRandomEccentricity_e0();
+
+            Dictionary<string, double> dMNQ = new Dictionary<string, double>(); // GetEffortsForCalc();
+
+            if (dMNQ["Qx"] == 0 && dMNQ["Qy"] == 0)
+            {
+                return null;
+            }
+
+            Dictionary<string, double> resQxQy = FiberCalculate_QxQy(dMNQ, sz);
+
+            return resQxQy;
+        }
+
+
+        /// <summary>
+        /// Расчет по НДМ 
+        /// </summary>
+        /// <param name="_beamSection">Тип сечения</param>
+        /// <returns></returns>
+        private BSCalcResultNDM CalcNDM(BeamSection _beamSection)
+        {            
+            double[] sz = BeamSizes(/*length*/);
+
+            if (_beamSection == BeamSection.Any)
+            {
+                sz[0] = Fiber.Width;
+                sz[1] = Fiber.Length;
+            }
+
+            Dictionary<string, double> resQxQy = CalcQxQy(sz);
+
+            // данные с формы:
+            Dictionary<string, double> _D = DictCalcParams(_beamSection);
+
+            // расчет на MxMyN по НДМ            
+            NDMSetup _setup = NDMSetupValuesFromForm();
+
+            // расчет:
+            CalcNDM calcNDM = new CalcNDM(_beamSection) { setup = _setup, Dprm = _D };
+
+            Dictionary<string, double> resGr2 = null;
+
+            if (_beamSection == BeamSection.Any ||
+                _beamSection == BeamSection.Ring)
+            {
+                calcNDM.RunGroup1();
+
+                calcNDM.CalcRes.b = Fiber.Width;
+                calcNDM.CalcRes.h = Fiber.Length;
+
+                resGr2 = FiberCalculateGroup2(calcNDM.CalcRes);
+            }
+            else if (BSHelper.IsRectangled(_beamSection))
+            {
+                calcNDM.RunGroup1();
+
+                resGr2 = FiberCalculateGroup2(calcNDM.CalcRes);
+            }
+            else
+            {
+                calcNDM.Run();
+            }
+
+            BSCalcResultNDM calcRes = new BSCalcResultNDM();
+            if (calcNDM.CalcRes != null)
+                calcRes = calcNDM.CalcRes;
+            if (resGr2 != null)
+                calcRes.SetRes2Group(resGr2, true, true);
+            calcRes.ResQxQy = resQxQy;
+            //calcRes.ImageStream = ImageStream;
+            //calcRes.Coeffs = Coeffs;
+            calcRes.UnitConverter = _UnitConverter;
+
+            return calcRes;
+        }
+
+        private Dictionary<string, double>? FiberCalculateGroup2(object calcRes)
+        {
+            return new Dictionary<string, double>() { };
+        }
+
+        private NDMSetup NDMSetupValuesFromForm()
+        {
+            return new NDMSetup();
         }
     }   
 }

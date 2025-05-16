@@ -41,22 +41,25 @@ namespace BSFiberCore.Models.BL.Rep
             string path2file = "FiberCalculationMultiReport.htm";
             File.CreateText(path2file).Dispose();
 
-            // Создаем единую часть отчета для всех расчетов
-            BSReport bSReport = new BSReport(m_BeamSection);
-            bSReport.CalcRes = calcResults[0];
-            string pathToHtmlFile = bSReport.CreateHeaderMultiReport(path2file, m_BeamSection, reportName);
-
-            for (int i = 0; calcResults.Count > i; i++)
+            if (calcResults.Count > 0)
             {
-                using (StreamWriter w = new StreamWriter(path2file, true, Encoding.UTF8))
-                {
-                    w.WriteLine($"<H2>Результат расчета по комбинациям загружений: {i + 1}</H2>");
-                }
-                bSReport = new BSReport(m_BeamSection);
-                bSReport.CalcRes = calcResults[i];
-                pathToHtmlFile = bSReport.CreateBodyMultiReport(path2file, m_BeamSection, reportName);
-            }
+                // Создаем единую часть отчета для всех расчетов
+                BSReport bSReport = new BSReport(m_BeamSection);
+                bSReport.CalcRes = calcResults[0] ;
 
+                string pathToHtmlFile = bSReport.CreateHeaderMultiReport(path2file, m_BeamSection, reportName);
+
+                for (int i = 0; calcResults.Count > i; i++)
+                {
+                    using (StreamWriter w = new StreamWriter(path2file, true, Encoding.UTF8))
+                    {
+                        w.WriteLine($"<H2>Результат расчета по комбинациям загружений: {i + 1}</H2>");
+                    }
+                    bSReport = new BSReport(m_BeamSection);
+                    bSReport.CalcRes = calcResults[i];
+                    pathToHtmlFile = bSReport.CreateBodyMultiReport(path2file, m_BeamSection, reportName);
+                }
+            }
             System.Diagnostics.Process.Start(path2file);
         }
 
