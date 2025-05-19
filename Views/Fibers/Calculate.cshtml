@@ -4,11 +4,11 @@
 
 <form asp-action = "Calculate" method="post">
 
-    <h4>Геометрические характеристики</h4>
+    <h3>Геометрические характеристики</h3>
     <p>Выберите тип сечения:</p>
     <div>
         <label for="section1">Прямоугольное</label> 
-        <input asp-for="SectionType" type="radio" id="Rectangle" name="SectionType" value="4" />
+        <input asp-for="SectionType" type="radio" id="Rectangle" name="SectionType" value="4" checked />
         &ndash;
         <label for="section2">Тавр T</label>
         <input asp-for="SectionType" type="radio" id="TBeam" name="SectionType" value="1" />
@@ -20,8 +20,16 @@
         <input asp-for="SectionType" type="radio" id="IBeam" name="SectionType" value="2" />
         &ndash;
         <label for="section3">Кольцо</label>
-        <input asp-for="SectionType" type="radio" id="Ring" name="SectionType" value="3" />
-        
+        <input asp-for="SectionType" type="radio" id="Ring" name="SectionType" value="3" />        
+    </div>
+
+    <h4>Метод расчета:</h4>
+    <div>
+        <label for="static_calc">по предельным усилиям:</label>
+        <input asp-for=CalcType type="radio" id="static_calc" name="CalcType" value=0 checked />
+        <br>
+        <label for="ndm">по нелинейной деформационной модели:</label>
+        <input asp-for=CalcType type="radio" id="ndm" name="CalcType" value=1/>
     </div>
 
     <div>

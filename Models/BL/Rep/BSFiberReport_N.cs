@@ -9,11 +9,11 @@ namespace BSFiberCore.Models.BL.Rep
     [DisplayName("Расчет элементов на действие продольной силы")]    
     public class BSFiberReport_N : BSFiberReport_MNQ
     {
-        private BSFiberReportData m_ReportData;
+        private BSFiberReportData? m_ReportData;
         
         private bool UseRebar { get; set; }
 
-        private List<BSFiberReport_N> ListFiberReportData;
+        private List<BSFiberReport_N>? ListFiberReportData;
 
         public BSFiberReport_N()
         {
@@ -31,16 +31,16 @@ namespace BSFiberCore.Models.BL.Rep
         private void InitReportSections(ref BSFiberReport report)
         {
             report.Beam = null;
-            report.Coeffs = m_ReportData.Coeffs;
-            report.Efforts = m_ReportData.Efforts;
-            report.GeomParams = m_ReportData.GeomParams;
-            report.PhysParams = m_ReportData.PhysParams;
-            report.Reinforcement = m_ReportData.m_Reinforcement;
-            report.CalcResults1Group = m_ReportData.CalcResults1Group;
-            report.CalcResults2Group = m_ReportData.CalcResults2Group;
-            report.ImageStream = m_ReportData.ImageStream;
+            report.Coeffs = m_ReportData?.Coeffs;
+            report.Efforts = m_ReportData?.Efforts;
+            report.GeomParams = m_ReportData?.GeomParams;
+            report.PhysParams = m_ReportData?.PhysParams;
+            report.Reinforcement = m_ReportData?.m_Reinforcement;
+            report.CalcResults1Group = m_ReportData?.CalcResults1Group;
+            report.CalcResults2Group = m_ReportData?.CalcResults2Group;
+            report.ImageStream = m_ReportData?.ImageStream;
             report.Messages = m_ReportData.Messages;
-            report._unitConverter = m_ReportData.UnitConverter;
+            report._unitConverter = m_ReportData?.UnitConverter;
             report.UseReinforcement = m_ReportData.UseReinforcement;
         }
 

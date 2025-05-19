@@ -22,14 +22,14 @@ namespace BSFiberCore.Models.BL.Rep
     public class BSFiberReport
     {
         public string ReportName { get; set; }
-        public Dictionary<string, double> Beam { set { m_Beam = value; } }
-        public Dictionary<string, double> Coeffs { set { m_Coeffs = value; } }
-        public Dictionary<string, double> Efforts { set { m_Efforts = value; } }
-        public Dictionary<string, double> PhysParams { set { m_PhysParams = value; } }
-        public Dictionary<string, double> GeomParams { set { m_GeomParams = value; } }
-        public Dictionary<string, double> CalcResults1Group { set { m_CalcResults1Group = value; } }
-        public Dictionary<string, double> CalcResults2Group { set { m_CalcResults2Group = value; } }
-        public Dictionary<string, double> Reinforcement { set { m_Reinforcement = value; } }
+        public Dictionary<string, double>? Beam { set { m_Beam = value; } }
+        public Dictionary<string, double>? Coeffs { set { m_Coeffs = value; } }
+        public Dictionary<string, double>? Efforts { set { m_Efforts = value; } }
+        public Dictionary<string, double>? PhysParams { set { m_PhysParams = value; } }
+        public Dictionary<string, double>? GeomParams { set { m_GeomParams = value; } }
+        public Dictionary<string, double>? CalcResults1Group { set { m_CalcResults1Group = value; } }
+        public Dictionary<string, double>? CalcResults2Group { set { m_CalcResults2Group = value; } }
+        public Dictionary<string, double>? Reinforcement { set { m_Reinforcement = value; } }
         public List<string> Messages { set { m_Messages = value; }}
         public List<string> PictureToHeadReport { set { m_PictureToHeadReport = value; } }
         public List<string> PictureToBodyReport { set { m_PictureToBodyReport = value; } }
@@ -38,14 +38,14 @@ namespace BSFiberCore.Models.BL.Rep
         public BeamSection BeamSection { set { m_BeamSection = value; } }
         public bool UseReinforcement { get; set; }
 
-        protected Dictionary<string, double> m_Beam;
-        protected Dictionary<string, double> m_Coeffs;
-        protected Dictionary<string, double> m_Efforts;
-        protected Dictionary<string, double> m_PhysParams;
-        protected Dictionary<string, double> m_GeomParams;
-        protected Dictionary<string, double> m_CalcResults1Group;
-        protected Dictionary<string, double> m_CalcResults2Group;
-        protected Dictionary<string, double> m_Reinforcement;
+        protected Dictionary<string, double>? m_Beam;
+        protected Dictionary<string, double>? m_Coeffs;
+        protected Dictionary<string, double>? m_Efforts;
+        protected Dictionary<string, double>? m_PhysParams;
+        protected Dictionary<string, double>? m_GeomParams;
+        protected Dictionary<string, double>? m_CalcResults1Group;
+        protected Dictionary<string, double>? m_CalcResults2Group;
+        protected Dictionary<string, double>? m_Reinforcement;
         protected List<string> m_Messages;
         protected List<string> m_Path2BeamDiagrams;
         protected List<string> m_PictureToHeadReport;

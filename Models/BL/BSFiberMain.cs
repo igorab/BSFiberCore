@@ -20,6 +20,7 @@ namespace BSFiberCore.Models.BL
 
         private double[] sz;
 
+        public Dictionary<string, double> MNQ { private get; set; } 
         public bool UseReinforcement { get; set; } = false;
         public BeamSection BeamSection { get; set; }
         public BSMatFiber MatFiber { get; set; }
@@ -45,6 +46,7 @@ namespace BSFiberCore.Models.BL
         {
             _UnitConverter = new LameUnitConverter();
             SectionChart = new BSSectionChart();
+            MNQ  = new Dictionary<string, double>();
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace BSFiberCore.Models.BL
         /// 1) Расчет предельного момента образования трещин
         /// 2) Расчет ширины раскрытия трещины
         /// </summary>        
-        public BSFiberCalc_Cracking FiberCalculate_Cracking(Dictionary<string, double> MNQ)
+        public BSFiberCalc_Cracking FiberCalculate_Cracking(Dictionary<string, double> _MNQ)
         {
             bool calcOk;
             try
@@ -159,7 +161,7 @@ namespace BSFiberCore.Models.BL
 
                 bsBeam.SetSizes(BeamSizes());
                 
-                BSFiberCalc_Cracking calc_Cracking = new BSFiberCalc_Cracking(MNQ)
+                BSFiberCalc_Cracking calc_Cracking = new BSFiberCalc_Cracking(_MNQ)
                 {
                     Beam = bsBeam,
                     typeOfBeamSection = BeamSection
@@ -401,20 +403,18 @@ namespace BSFiberCore.Models.BL
         }
 
         private Dictionary<string, double> DictCalcParams(BeamSection _beamSection)
-        {
-            Dictionary<string, double> MNQ = new Dictionary<string, double>();
+        {            
+            double numYft=Fiber.Yft, numYb = Fiber.Yb, numYb1 = Fiber.Yb1, numYb2 = Fiber.Yb2, numYb3 = Fiber.Yb3, numYb5 = Fiber.Yb5;
+            double numE_beton = MatFiber.Eb, numE_fbt = MatFiber.Efbt;
+            double numRfb_n = MatFiber.Rfbn, numRfbt_n = MatFiber.Rfbtn, numRfbt2n = MatFiber.Rfbt2n, numRfbt3n = MatFiber.Rfbt3n;
 
-            double numYft=0, numYb = 0, numYb1 = 0, numYb2 = 0, numYb3 = 0, numYb5 = 0;
-            double numE_beton = 0, numE_fbt = 0;
-            double numRfb_n = 0, numRfbt_n = 0, numRfbt2n = 0, numRfbt3n = 0;
-
-            double numEs = 0;
+            double numEs = Fiber.Es;
             // нормативные 
-            double numRscn = 0;
-            double numRsn = 0;
+            double numRscn = Fiber.Rsc;
+            double numRsn = Fiber.Rs;
             // расчетные
-            double numRsc = 0;
-            double numRs = 0;
+            double numRsc = Fiber.Rsc;
+            double numRs = Fiber.Rs;
             // деформации                
             double numEps_s_ult = 0;
 
@@ -505,7 +505,7 @@ namespace BSFiberCore.Models.BL
                 ["Yb5"] = numYb5
             };
 
-            double[] beam_sizes = BeamSizes();
+            double[] beam_sizes = sz; // BeamSizes();
 
             double b = 0;
             double h = 0;
@@ -601,16 +601,14 @@ namespace BSFiberCore.Models.BL
         {
             //SetFiberMaterialProperties();
 
-            //RecalRandomEccentricity_e0();
+            //RecalRandomEccentricity_e0();            
 
-            Dictionary<string, double> dMNQ = new Dictionary<string, double>(); // GetEffortsForCalc();
-
-            if (dMNQ["Qx"] == 0 && dMNQ["Qy"] == 0)
+            if (MNQ["Qx"] == 0 && MNQ["Qy"] == 0)
             {
                 return null;
             }
 
-            Dictionary<string, double> resQxQy = FiberCalculate_QxQy(dMNQ, sz);
+            Dictionary<string, double> resQxQy = FiberCalculate_QxQy(MNQ, sz);
 
             return resQxQy;
         }

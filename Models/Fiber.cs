@@ -46,11 +46,15 @@ namespace BSFiberCore.Models
         public string Bfb { get; set; }
 
         // усилия внешние
+        public double Mx { get; set; }
         public double My { get; set; }
-
         public double N { get; set; }
-
         public double Qx { get; set; }
+        public double Qy { get; set; }
+        // Эксцентриситет
+        public double Ml { get; set; }
+        public double eN { get; set; }
+        public double e0 { get; set; }
 
         // арматура
         public double As { get; set; }
@@ -93,8 +97,7 @@ namespace BSFiberCore.Models
             BetonIndex = "";
             A_Rs = "";
             A_Rsc = "";
-            Efb = 2141404.0200;
-            CalcType = 1;
+            Efb = 2141404.0200;            
         }
 
         /// <summary>
@@ -115,17 +118,7 @@ namespace BSFiberCore.Models
             List<BSFiberReportData> calcResults_MNQ = new List<BSFiberReportData>();
 
             bool use_reinforcement = As > 0 || A1s > 0;
-
-            BSFiberMain fiberMain = new BSFiberMain()
-            {
-                UseReinforcement = use_reinforcement,
-                BeamSection = (BeamSection)SectionType,
-            };
-
-            fiberMain.Fiber = this;
-            fiberMain.InitSize();
-            fiberMain.InitMaterials();
-            fiberMain.SelectMaterialFromList();
+            BSFiberMain fiberMain = FiberMain(use_reinforcement);
 
             double[] prms = { Yft, Yb, Yb1, Yb2, Yb3, Yb5 };
 
@@ -198,15 +191,27 @@ namespace BSFiberCore.Models
             return htmlcontent;
         }
 
+        private BSFiberMain FiberMain(bool use_reinforcement)
+        {
+            BSFiberMain fiberMain = new BSFiberMain()
+            {
+                UseReinforcement = use_reinforcement,
+                BeamSection = (BeamSection)SectionType,
+                Fiber = this
+            };
+
+            fiberMain.InitSize();
+            fiberMain.InitMaterials();
+            fiberMain.SelectMaterialFromList();
+            return fiberMain;
+        }
+
         public string RunCalcNDM()
         {
             try
             {
-                BSFiberMain fiberMain = new BSFiberMain()
-                {                    
-                    BeamSection = (BeamSection)SectionType,
-                };
-
+                BSFiberMain fiberMain = FiberMain(false);
+                
                 BSSectionChart SectionChart = new BSSectionChart();
 
                 List<BSCalcResultNDM> calcResults = new List<BSCalcResultNDM>();
@@ -219,7 +224,8 @@ namespace BSFiberCore.Models
                 var beamSection = (BeamSection)SectionType;
                 foreach (Dictionary<string, double> efforts in lstMNQ)
                 {
-                    
+                    fiberMain.MNQ = efforts;
+
                     TriangleNet.Geometry.Point CG = new TriangleNet.Geometry.Point(0, 0);
                     BSCalcResultNDM calcRes = null;
                    
@@ -247,7 +253,7 @@ namespace BSFiberCore.Models
                     if (calcRes != null)
                     {
                         //calcRes.ImageStream = m_SectionChart.GetImageStream;
-                        //calcResults.Add(calcRes);
+                        calcResults.Add(calcRes);
                     }
                 }
 
@@ -260,22 +266,32 @@ namespace BSFiberCore.Models
             }
             catch (Exception _e)
             {
-                MessageBox.Show(_e.Message);
+                return MessageBox.Show(_e.Message);
             }
 
             return "";
         }
                 
         private bool ValidateNDMCalc(List<Dictionary<string, double>> lstMNQ)
-        {
+        {            
             return true;
         }
 
         private void GetEffortsFromForm(out List<Dictionary<string, double>> lstMNQ)
         {
-            Dictionary<string, double> tmpEfforts = new Dictionary<string, double>();
+            Dictionary<string, double> mnq = new Dictionary<string, double>()
+            {
+                ["Mx"] = Mx,
+                ["My"] = My,
+                ["N"]  = N,
+                ["Qx"] = Qx,
+                ["Qy"] = Qy,
+                ["Ml"] = Ml,
+                ["eN"] = eN,
+                ["e0"] = e0,
+            };
 
-            lstMNQ = new List<Dictionary<string, double>> { tmpEfforts };           
+            lstMNQ = new List<Dictionary<string, double>> { mnq };           
         }
     }
 }
