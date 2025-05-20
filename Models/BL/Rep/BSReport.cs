@@ -24,14 +24,7 @@ namespace BSFiberCore.Models.BL.Rep
         private LameUnitConverter _UnitConverter;
 
         public BSCalcResultNDM CalcRes { get; set; }
-
-        public static void RunFromCode(BeamSection m_BeamSection, BSCalcResultNDM calcRes)
-        {
-            BSReport bSReport = new BSReport(m_BeamSection);
-            bSReport.CalcRes = calcRes;
-            bSReport.CreateReportNDM();
-        }
-
+        
         /// <summary>
         /// Получить отчет
         /// </summary>
@@ -97,34 +90,7 @@ namespace BSFiberCore.Models.BL.Rep
             report._unitConverter = CalcRes.UnitConverter;
         }
 
-        private string CreateReport(int _fileId,
-                                    BeamSection _BeamSection,
-                                    string _reportName = "",
-                                    bool _useReinforcement = false)
-        {
-            try
-            {
-                string path = "";
-                BSFiberReport report = new BSFiberReport();
-
-                if (_reportName != "")
-                    report.ReportName = _reportName;
-
-                report.BeamSection = _BeamSection;
-                report.UseReinforcement = _useReinforcement;
-
-                InitReportSections(ref report);
-
-                path = report.CreateReport(_fileId);
-                return path;
-            }
-            catch (Exception _e)
-            {
-                throw _e;
-            }
-        }
-
-
+       
         /// <summary>
         /// Сформировать Единую часть для всех групп расчетов
         /// </summary>
@@ -194,36 +160,6 @@ namespace BSFiberCore.Models.BL.Rep
             {
                 throw _e;
             }
-        }
-
-        [DisplayName("Расчет по прочности нормальных сечений на основе нелинейной деформационной модели")]
-        public void CreateReportNDM()
-        {
-            try
-            {
-                string reportName = "";
-                try
-                {
-                    MethodBase method = MethodBase.GetCurrentMethod();
-                    DisplayNameAttribute attr = (DisplayNameAttribute)method.GetCustomAttributes(typeof(DisplayNameAttribute), true)[0];
-                    reportName = attr.DisplayName;
-                }
-                catch
-                {
-                    MessageBox.Show("Не задан атрибут DisplayName метода");
-                }
-
-                string pathToHtmlFile = CreateReport(1, m_BeamSection, reportName);
-
-                System.Diagnostics.Process.Start(pathToHtmlFile);
-            }
-            catch (Exception _e)
-            {
-                MessageBox.Show("Ошибка в отчете " + _e.Message);
-            }
-        }
+        }        
     }
-
-
-
 }
