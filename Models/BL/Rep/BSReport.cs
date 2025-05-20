@@ -35,11 +35,12 @@ namespace BSFiberCore.Models.BL.Rep
         /// <summary>
         /// Получить отчет
         /// </summary>
-        public static void RunReport(BeamSection m_BeamSection, List<BSCalcResultNDM> calcResults)
+        public static string RunReport(BeamSection m_BeamSection, List<BSCalcResultNDM> calcResults)
         {
             string reportName = "Расчет по прочности нормальных сечений на основе нелинейной деформационной модели";
             string path2file = "FiberCalculationMultiReport.htm";
             File.CreateText(path2file).Dispose();
+            string pathToHtmlFile = "";
 
             if (calcResults.Count > 0)
             {
@@ -47,7 +48,7 @@ namespace BSFiberCore.Models.BL.Rep
                 BSReport bSReport = new BSReport(m_BeamSection);
                 bSReport.CalcRes = calcResults[0] ;
 
-                string pathToHtmlFile = bSReport.CreateHeaderMultiReport(path2file, m_BeamSection, reportName);
+                pathToHtmlFile = bSReport.CreateHeaderMultiReport(path2file, m_BeamSection, reportName);
 
                 for (int i = 0; calcResults.Count > i; i++)
                 {
@@ -60,7 +61,11 @@ namespace BSFiberCore.Models.BL.Rep
                     pathToHtmlFile = bSReport.CreateBodyMultiReport(path2file, m_BeamSection, reportName);
                 }
             }
-            System.Diagnostics.Process.Start(path2file);
+
+            var htmlContent = System.IO.File.ReadAllText(path2file);
+            return htmlContent;
+            
+            //System.Diagnostics.Process.Start(path2file);
         }
 
 

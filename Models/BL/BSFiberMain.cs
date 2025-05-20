@@ -7,6 +7,7 @@ using BSFiberCore.Models.BL.Rep;
 using BSFiberCore.Models.BL.Sec;
 using BSFiberCore.Models.BL.Tri;
 using BSFiberCore.Models.BL.Uom;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Data;
 using System.Drawing;
 
@@ -25,14 +26,15 @@ namespace BSFiberCore.Models.BL
         public BeamSection BeamSection { get; set; }
         public BSMatFiber MatFiber { get; set; }
         public Fiber Fiber { get; internal set; }
+        public Rebar? Rebar { get; internal set; }
         public List<string> m_Message { get; private set; }
         public Dictionary<string, double> m_CalcResults2Group { get; private set; }
-
-        private List<Elements> FiberConcrete;
-
-        private List<BSFiberBeton> Bft3Lst;
-        private List<FiberBft> BftnLst;
-        private List<Beton> BfnLst;
+        private List<Elements> FiberConcrete { get; set; }
+        private List<BSFiberBeton> Bft3Lst { get; set; }
+        private List<FiberBft> BftnLst { get; set; }
+        private List<Beton> BfnLst { get; set; }
+        private List<Rebar>? m_Rebar { get; set; }
+        private List<RebarDiameters>? m_RebarDiameters { get; set; }
 
         BSSectionChart SectionChart;
 
@@ -211,17 +213,20 @@ namespace BSFiberCore.Models.BL
             sz = BeamWidtHeight(out double w, out double h, out double area);
         }
 
+        /// <summary>
+        /// списки свойств материалов
+        /// </summary>
         public void InitMaterials()
         {
-            List<RebarDiameters>   m_RebarDiameters = BSData.LoadRebarDiameters();
-            List<Rebar>            m_Rebar = BSData.LoadRebar();
-            /*List<Elements>*/     FiberConcrete = BSData.LoadFiberConcreteTable();
+            /*List<RebarDiameters>*/   m_RebarDiameters = BSData.LoadRebarDiameters();
+            /*List<Rebar>*/            m_Rebar = BSData.LoadRebar();
+            /*List<Elements>*/         FiberConcrete = BSData.LoadFiberConcreteTable();
 
-            /*List<BSFiberBeton>*/ Bft3Lst =  BSQuery.LoadBSFiberBeton();
+            /*List<BSFiberBeton>*/     Bft3Lst =  BSQuery.LoadBSFiberBeton();
 
-            /*List<FiberBft>*/     BftnLst = BSData.LoadFiberBft();
+            /*List<FiberBft>*/         BftnLst = BSData.LoadFiberBft();
 
-            /*List<Beton>*/        BfnLst = BSData.LoadBetonData(0);           
+            /*List<Beton>*/            BfnLst = BSData.LoadBetonData(0);                           
         }
 
         private void SelectedFiberBetonValues(string fib_i, string bft3n,  ref double numRfbt3n, ref double numRfbt2n)
@@ -333,7 +338,7 @@ namespace BSFiberCore.Models.BL
 
             BfnSelectedValue(Fiber.Bfb, 0, 1, ref rfbn, ref Eb, ref Bclass);
             
-            MatFiber = new BSMatFiber(Fiber.Efb, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5)
+            MatFiber = new BSMatFiber(Fiber.Ef, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5)
             {
                 B = Bclass,
                 Rfbt3n = rfbt3n,
@@ -341,6 +346,8 @@ namespace BSFiberCore.Models.BL
                 Rfbtn  = rfbtn,
                 Rfbn   = rfbn
             };
+
+            Rebar = RebarSelectedValues(Fiber.A_Rs);
         }
 
         /// <summary>
@@ -403,30 +410,11 @@ namespace BSFiberCore.Models.BL
         }
 
         private Dictionary<string, double> DictCalcParams(BeamSection _beamSection)
-        {            
-            double numYft=Fiber.Yft, numYb = Fiber.Yb, numYb1 = Fiber.Yb1, numYb2 = Fiber.Yb2, numYb3 = Fiber.Yb3, numYb5 = Fiber.Yb5;
-            double numE_beton = MatFiber.Eb, numE_fbt = MatFiber.Efbt;
-            double numRfb_n = MatFiber.Rfbn, numRfbt_n = MatFiber.Rfbtn, numRfbt2n = MatFiber.Rfbt2n, numRfbt3n = MatFiber.Rfbt3n;
-
-            double numEs = Fiber.Es;
-            // нормативные 
-            double numRscn = Fiber.Rsc;
-            double numRsn = Fiber.Rs;
-            // расчетные
-            double numRsc = Fiber.Rsc;
-            double numRs = Fiber.Rs;
+        {                                                                                   
             // деформации                
-            double numEps_s_ult = 0;
-
-            BSMatFiber mf = new BSMatFiber(numE_beton, numYft, numYb, numYb1, numYb2, numYb3, numYb5);
-            mf.Rfbn = numRfb_n;
-            mf.Rfbtn = numRfbt_n;
-            mf.Rfbt2n = numRfbt2n;
-            mf.Rfbt3n = numRfbt3n;
-
-            double lgth, coeflgth;
-            (lgth, coeflgth) = (0, 0); // BeamLength();
-
+            double numEps_s_ult = 0;           
+            double lgth = 0, coeflgth = 0;
+           
             Dictionary<string, double> D = new Dictionary<string, double>()
             {
                 // enforces
@@ -459,19 +447,19 @@ namespace BSFiberCore.Models.BL
                 ["nz"] = 0, //_beamSectionMeshSettings.NX, // в алгоритме плосткость сечения YOZ
 
                 // beton
-                ["Eb0"] = numE_beton, // сжатие
-                ["Ebt"] = numE_fbt, // растяжение
+                ["Eb0"] = MatFiber.Eb, // сжатие
+                ["Ebt"] = MatFiber.Efbt, // растяжение
 
                 // - нормативные
-                ["Rbcn"]  = numRfb_n,
-                ["Rbtn"]  = numRfbt_n,
-                ["Rbt2n"] = numRfbt2n,
-                ["Rbt3n"] = numRfbt3n,
+                ["Rbcn"]  = MatFiber.Rfbn,
+                ["Rbtn"]  = MatFiber.Rfbtn,
+                ["Rbt2n"] = MatFiber.Rfbt2n,
+                ["Rbt3n"] = MatFiber.Rfbt3n,
                 // - расчетные 
-                ["Rbc"]  = mf.Rfb,
-                ["Rbt"]  = mf.Rfbt,
-                ["Rbt2"] = mf.Rfbt2,
-                ["Rbt3"] = mf.Rfbt3,
+                ["Rbc"]  = MatFiber.Rfb,
+                ["Rbt"]  = MatFiber.Rfbt,
+                ["Rbt2"] = MatFiber.Rfbt2,
+                ["Rbt3"] = MatFiber.Rfbt3,
                 // - деформации
                 // сжатие
                 ["ebc0"]   = 0,
@@ -485,24 +473,24 @@ namespace BSFiberCore.Models.BL
                 ["ebt3"] = 0,
                 ["ebt_ult"] = 0.015d,
                 // арматура steel                
-                ["Es0"] = numEs,
+                ["Es0"] = Fiber.Es,
                 // нормативные 
-                ["Rscn"] = numRscn,
-                ["Rstn"] = numRsn,
+                ["Rscn"] = Rebar.Rsn,
+                ["Rstn"] = Rebar.Rsn,
                 // расчетные
-                ["Rsc"] = numRsc,
-                ["Rst"] = numRs,
+                ["Rsc"] = Rebar.Rsc,
+                ["Rst"] = Rebar.Rs,
                 // деформации
                 ["esc2"] = 0,
                 ["est2"] = 0,
                 ["es_ult"] = numEps_s_ult,
                 // коэффициенты надежности
-                ["Yft"] = numYft,
-                ["Yb"]  = numYb,
-                ["Yb1"] = numYb1,
-                ["Yb2"] = numYb2,
-                ["Yb3"] = numYb3,
-                ["Yb5"] = numYb5
+                ["Yft"] = Fiber.Yft,
+                ["Yb"]  = Fiber.Yb,
+                ["Yb1"] = Fiber.Yb1,
+                ["Yb2"] = Fiber.Yb2,
+                ["Yb3"] = Fiber.Yb3,
+                ["Yb5"] = Fiber.Yb5
             };
 
             double[] beam_sizes = sz; // BeamSizes();
@@ -565,7 +553,7 @@ namespace BSFiberCore.Models.BL
 
             InitStrengthFactorsFromForm(prms);
 
-            BSMatFiber fiber = new BSMatFiber(Fiber.Efb, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5);
+            BSMatFiber fiber = new BSMatFiber(Fiber.Ef, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5);
             
             var betonType = BSQuery.BetonTypeFind(0);
 
@@ -635,10 +623,10 @@ namespace BSFiberCore.Models.BL
             Dictionary<string, double> _D = DictCalcParams(_beamSection);
 
             // расчет на MxMyN по НДМ            
-            NDMSetup _setup = NDMSetupValuesFromForm();
+            //NDMSetup _setup = NDMSetupValuesFromForm();
 
             // расчет:
-            CalcNDM calcNDM = new CalcNDM(_beamSection) { setup = _setup, Dprm = _D };
+            CalcNDM calcNDM = new CalcNDM(_beamSection) { Dprm = _D };
 
             Dictionary<string, double> resGr2 = null;
 
@@ -751,10 +739,15 @@ namespace BSFiberCore.Models.BL
         {
             return new Dictionary<string, double>() { };
         }
+        
+        // арматура
+        public Rebar? RebarSelectedValues(string _item)
+        {            
+            // настройки из БД
+            Rebar? dbRebar = m_Rebar?.Where(x => x.ID == _item).FirstOrDefault();
+            double numEsValue = BSHelper.MPA2kgsm2(dbRebar?.Es);
 
-        private NDMSetup NDMSetupValuesFromForm()
-        {
-            return new NDMSetup();
+            return dbRebar;
         }
     }   
 }

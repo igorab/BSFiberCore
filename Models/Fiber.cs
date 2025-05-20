@@ -73,8 +73,14 @@ namespace BSFiberCore.Models
 
         public double Rsc { get; set; }
 
+        // модуль упругости арматуры
         public double Es { get; set; }
-        public double Efb { get; set; }
+        // модуль упругости бетона
+        public double Ef { get; set; }
+        public double Efbt { get; set; }
+        public double Eb { get; set; }
+
+        public double mu_fv { get; set; }
 
         // коэффициенты надежности
         public double Yft { get;  set; }
@@ -97,7 +103,7 @@ namespace BSFiberCore.Models
             BetonIndex = "";
             A_Rs = "";
             A_Rsc = "";
-            Efb = 2141404.0200;            
+            //Efb = 2141404.0200;            
         }
 
         /// <summary>
@@ -203,6 +209,7 @@ namespace BSFiberCore.Models
             fiberMain.InitSize();
             fiberMain.InitMaterials();
             fiberMain.SelectMaterialFromList();
+            
             return fiberMain;
         }
 
@@ -261,15 +268,15 @@ namespace BSFiberCore.Models
                 //CreatePictureForBodyReport(calcResults);
 
                 // формирование отчета
-                BSReport.RunReport(beamSection, calcResults);
+                string html = BSReport.RunReport(beamSection, calcResults);
+
+                return html;
 
             }
             catch (Exception _e)
             {
                 return MessageBox.Show(_e.Message);
-            }
-
-            return "";
+            }            
         }
                 
         private bool ValidateNDMCalc(List<Dictionary<string, double>> lstMNQ)

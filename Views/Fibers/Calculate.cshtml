@@ -139,6 +139,13 @@
     </div>
     <br>
     <div>
+        <h6>Модули упругости бетона:</h6>
+        <label>Ef, кг/см2</label><input asp-for=Ef type="number" step="0.1" value=2141404.0200 />
+        <label>Efb t, кг/см2</label><input asp-for=Efbt type="number" step="0.1" value=367607.6901 />
+        <label>Eb, кг/см2</label><input asp-for=Ef type="number" step="0.1" value=331407.7650 />
+    </div>
+    <br>
+    <div>
         <label>Класс бетона на растяжение Bft3:</label>
         <input asp-for="Bft3" type="text" list="options_bft3"  value="B3i" required />
         <datalist id="options_bft3">
@@ -188,7 +195,12 @@
     <br>
     <div>
         <div>
-         <label>Класс aрматуры на растяжение:</label>
+            <label>Модуль упругости арматуры:</label>
+            <input asp-for="Es" type="number" step="0.1" value=2039432.40 />
+        </div>
+        <br>
+        <div>
+        <label>Класс aрматуры на растяжение:</label>
         <input asp-for="A_Rs" type="text" list="options3" value="A240" required />
         <datalist id="options3">
             <option value="A240">A240</option>

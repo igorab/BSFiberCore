@@ -1,0 +1,289 @@
+﻿<H1>Расчет по прочности нормальных сечений на основе нелинейной деформационной модели</H1>
+<H4>Расчет выполнен по </H4>
+<H2>Сечение балки: Прямоугольное сечение</H2>
+<table><tr><td> <img src="data:image/png;base64, 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" alt = "C:\Work\BSFiberCore\Resources\FiberBeton.PNG" / width="500" height="300"> </td></tr> </table>
+<Table border=1 bordercolor = darkblue>
+<caption>Балка</caption>
+<tr>
+<td width=800><b>Длина элемента, см</b></td>
+<td width=200 align=center colspan=2>0 </td>
+</tr>
+<tr>
+<td width=800><b>Коэффициет расчетной длины</b></td>
+<td width=200 align=center colspan=2>0 </td>
+</tr>
+</Table>
+<br>
+<Table border=1 bordercolor = darkblue>
+<caption>Геометрия сечения</caption>
+<tr>
+<td width=800><b>Ширина сечения, b [см]</b></td>
+<td width=200 align=center>60</td>
+</tr>
+<tr>
+<td width=800><b>Высота сечения, h [см]</b></td>
+<td width=200 align=center>30</td>
+</tr>
+</tr>
+</Table>
+<br>
+<Table border=1 bordercolor = darkblue>
+<caption>Физические характеристики</caption>
+<tr>
+<td width=800>Модуль упругости фибробетона Eb, [кг/см2]</td>
+<td width=200 align=center>2141404.02 </td>
+<td width=200 align=center>210001.07 МПа </td>
+</tr>
+<tr>
+<td width=800>Нормативное сопротивление фибробетона на сжатие R,fbn, [кг/см2]</td>
+<td width=200 align=center>224.3376 </td>
+<td width=200 align=center>22 МПа </td>
+</tr>
+<tr>
+<td width=800>Нормативное сопротивление фибробетона на растяжение R,fbtn, [кг/см2]</td>
+<td width=200 align=center>30.5915 </td>
+<td width=200 align=center>3 МПа </td>
+</tr>
+<tr>
+<td width=800>Расчетное сопротивление фибробетона на сжатие R,fbn, [кг/см2]</td>
+<td width=200 align=center>113.2214 </td>
+<td width=200 align=center>11.1 МПа </td>
+</tr>
+<tr>
+<td width=800>Расчетное сопротивление фибробетона на растяжение R,fbtn, [кг/см2]</td>
+<td width=200 align=center>19.0608 </td>
+<td width=200 align=center>1.87 МПа </td>
+</tr>
+<tr>
+<td width=800>Модуль упругости арматуры Es, [кг/см2]</td>
+<td width=200 align=center>2039432.4 </td>
+<td width=200 align=center>200001.02 МПа </td>
+</tr>
+<tr>
+<td width=800>Нормативное сопротивление арматуры R,sn, [кг/см2]</td>
+<td width=200 align=center>240 </td>
+<td width=200 align=center>23.54 МПа </td>
+</tr>
+<tr>
+<td width=800>Максимально допустимая относительная деформация в арматуре, [.]</td>
+<td width=200 align=center>0.0001 </td>
+<td width=200 align=center> </td>
+</tr>
+</Table>
+<br>
+<Table border=1 bordercolor = darkblue>
+<caption>Армирование</caption>
+<tr>
+<td width=800>Количество стержней арматуры, [шт]</td>
+<td width=200 align=center>4 </td>
+</tr>
+<tr>
+<td width=800>Общая площадь продольной арматуры, [см2]</td>
+<td width=200 align=center>8.0425 </td>
+</tr>
+</Table>
+<br>
+<H2>Результат расчета по комбинациям загружений: 1</H2>
+<Table border=1 bordercolor = darkblue>
+<caption>Усилия</caption>
+<tr>
+<td width=800>Mx [кг*см]</td>
+<td width=200 align=center>0 </td>
+<td width=200 align=center>0 кг*мм </td>
+</tr>
+<tr>
+<td width=800>My [кг*см]</td>
+<td width=200 align=center>1000 </td>
+<td width=200 align=center>10000 кг*мм </td>
+</tr>
+<tr>
+<td width=800>N [кг]</td>
+<td width=200 align=center>-0 </td>
+<td width=200 align=center>-0 кг </td>
+</tr>
+<tr>
+<td width=800>Qx [кг]</td>
+<td width=200 align=center>0 </td>
+<td width=200 align=center>0 кг </td>
+</tr>
+<tr>
+<td width=800>Qy [кг]</td>
+<td width=200 align=center>0 </td>
+<td width=200 align=center>0 кг </td>
+</tr>
+</Table>
+<br>
+Расчет:
+<H3>Расчет по 1-й группе предельных состояний:</H3>
+<Table border=1 bordercolor = darkblue>
+<tr>
+<tr>
+<td width=800><b>--------Изгиб:--------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>Радиус кривизны продольной оси в плоскости действия моментов, Rx, [см]</td>
+<td width=200 align=center colspan=2 >-4284003.474874 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>Кривизна 1/Rx, [1/см]</td>
+<td width=200 align=center colspan=2 >-2.334265E-007 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800><b>--------Растяжение:--------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>Максимальная относительная деформация в фибробетоне, [.]</td>
+<td width=200 align=center colspan=2 >6.353011E-006 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>Напряжение в арматуре, [кг/см2]</td>
+<td width=200 align=center colspan=2 >11.052306 </td>
+<td width=200 align=center colspan=2>1.08 МПа </td>
+</tr>
+<tr>
+<td width=800>Максимальная относительная деформация в арматуре, [.]</td>
+<td width=200 align=center colspan=2 >5.419305E-006 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>---Коэффициент использования по деформации в арматуре (растяжение), [П6.1.21]</td>
+<td width=200 align=center colspan=2 bgcolor="#33CC00 ">0.05263 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800><b>--------Сжатие:-------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>Напряжение в бетоне (сжатие), [кг/см2]</td>
+<td width=200 align=center colspan=2 >-0.39173 </td>
+<td width=200 align=center colspan=2>-0.04 МПа </td>
+</tr>
+<tr>
+<td width=800>Максимальная относительная деформация в фибробетоне (сжатие) , [.]</td>
+<td width=200 align=center colspan=2 >-1.829314E-007 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>---Коэффициент использования по деформации в фибробетоне (сжатие), [П6.1.25]</td>
+<td width=200 align=center colspan=2 bgcolor="#33CC00 ">-9.1E-05 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>Напряжение в арматуре (сжатие), [кг/см2]</td>
+<td width=200 align=center colspan=2 >-12.750574 </td>
+<td width=200 align=center colspan=2>-1.25 МПа </td>
+</tr>
+<tr>
+<td width=800>Максимальная относительная деформация в арматуре (сжатие), [.]</td>
+<td width=200 align=center colspan=2 >-6.252021E-006 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>---Коэффициент использования по деформации в арматуре (сжатие), [П6.1.21]</td>
+<td width=200 align=center colspan=2 bgcolor="#33CC00 ">-0.060717 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800><b>--------Проверка по усилиям:-------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>Момент Мy, [кг*см]</td>
+<td width=200 align=center colspan=2 >1000 </td>
+<td width=200 align=center colspan=2>9.81 Кн*см </td>
+</tr>
+<tr>
+<td width=800>Сила N, [кг]</td>
+<td width=200 align=center colspan=2 >-4.121148E-013 </td>
+<td width=200 align=center colspan=2>-0 Кн </td>
+</tr>
+<tr>
+<td width=800>Количество итераций, [.]</td>
+<td width=200 align=center colspan=2 >5 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+</tr>
+</Table>
+<br>
+<H3>Расчет по 2-й группе предельных состояний:</H3>
+<Table border=2 bordercolor = darkblue>
+<tr>
+<tr>
+<td width=800><b>--------Определение момента образования трещин [П6.2.8..]:--------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>П6.2.13. Момент возникновения трещины, [кг*см]</td>
+<td width=200 align=center colspan=2 >0.000000E+000 </td>
+<td width=200 align=center colspan=2>0 Кн*см </td>
+</tr>
+<tr>
+<td width=800>Коэффициент использования по M_crc</td>
+<td width=200 align=center colspan=2 bgcolor="#33CC00 ">0.000000E+000 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>П6.2.31. Напряжение в арматуре, [кг/см2]</td>
+<td width=200 align=center colspan=2 >0.000000E+000 </td>
+<td width=200 align=center colspan=2>0 МПа </td>
+</tr>
+<tr>
+<td width=800><b>--------Расчет ширины раскрытия трещин [П6.2.14..]:--------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>П6.2.31. Ширина раскрытия трещины, [см]</td>
+<td width=200 align=center colspan=2 >0.000000E+000 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>Предельная ширина раскрытия трещины, [см]</td>
+<td width=200 align=center colspan=2 >0.000000E+000 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800><b>--------Кривизна фибробетонных элементов [П6.2.22..]:--------</b></td>
+<td width=200 align=center colspan=2></td>
+<td width=200 align=center colspan=2></td>
+</tr>
+<tr>
+<td width=800>П6.2.24. Кривизна 1/Rx, [1/см]</td>
+<td width=200 align=center colspan=2 >0.000000E+000 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+<tr>
+<td width=800>П6.2.31. Кривизна 1/Ry, [1/см]</td>
+<td width=200 align=center colspan=2 >0.000000E+000 </td>
+<td width=200 align=center colspan=2> </td>
+</tr>
+</tr>
+</Table>
+<br>
+<Table border=1 bordercolor = darkblue>
+<caption>Итог:</caption>
+<tr>
+<td width=800>| Не пройдена проверка сечения по фибробетону на растяжение e_fbt_max <= e_fbt_ult: 6.35E-06 > 0  </td>
+</tr>
+<tr>
+<td width=800>| Не пройдена проверка сечения по фибробетону на сжатие. e_fb_max >= e_fb_ult: -1.8E-07 < 0  </td>
+</tr>
+<tr>
+<td width=800>| Проверка сечения по арматуре пройдена. e_s_max=5E-06 <= e_s_ult=0.00010296982631049698  </td>
+</tr>
+<tr>
+<td width=800>| ---Предупреждения:------ </td>
+</tr>
+</Table>
+<br>

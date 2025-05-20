@@ -624,7 +624,7 @@ namespace BSFiberCore.Models.BL.Rep
 
         public void CreateRebarTable(List<double> Diameters, List<double> Eps_S, List<double> Sig_S)
         {
-            if ((Eps_S.Count == Sig_S.Count) && (Diameters.Count == Eps_S.Count))
+            if (Diameters !=null && Eps_S != null && Sig_S != null && (Eps_S?.Count == Sig_S?.Count) && (Diameters?.Count == Eps_S?.Count))
             {
                 if (ReinforcingBars == null) { ReinforcingBars = new List<ReinforcementBar>(); }
                 ReinforcingBars.Clear();
