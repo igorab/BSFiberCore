@@ -1,6 +1,7 @@
 ﻿using BSFiberCore.Models.BL;
 using BSFiberCore.Models.BL.Beam;
 using BSFiberCore.Models.BL.Calc;
+using BSFiberCore.Models.BL.Draw;
 using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Ndm;
 using BSFiberCore.Models.BL.Rep;
@@ -265,7 +266,7 @@ namespace BSFiberCore.Models
                 }
 
                 //CreatePictureForHeaderReport(calcResults);
-                //CreatePictureForBodyReport(calcResults);
+                fiberMain.CreatePictureForBodyReport(calcResults);
 
                 // формирование отчета
                 string html = BSReport.RunReport(beamSection, calcResults);

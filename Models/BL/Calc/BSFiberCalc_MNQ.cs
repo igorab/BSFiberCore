@@ -137,7 +137,7 @@ namespace BSFiberCore.Models.BL.Calc
         /// <summary>
         /// Свойства арматуры: продольная/поперечная
         /// </summary>
-        public Rebar Rebar {protected get; set;}
+        public Rebar? Rebar {protected get; set;}
         public bool UseRebar { get; set; }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace BSFiberCore.Models.BL.Calc
         public bool N_In { get; set; }
         public bool Shear { get; set; }
 
-        protected FiberBeton m_Fiber;
+        protected FiberBeton? m_Fiber;
 
         public BSMatRod MatRod { get; set; }
         public BSMatFiber MatFiber { get; set; }
@@ -812,7 +812,7 @@ namespace BSFiberCore.Models.BL.Calc
         public virtual void SetSize(double[] _t) {}
 
 
-        public double Get_e_tot => m_Fiber.e_tot;
+        public double Get_e_tot => m_Fiber?.e_tot ?? 0;
 
         public LameUnitConverter UnitConverter { get; internal set; }
         public Dictionary<string, double> CalcResults2Group { get; internal set; }

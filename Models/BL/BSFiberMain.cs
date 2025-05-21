@@ -1,5 +1,6 @@
 ﻿using BSFiberCore.Models.BL.Beam;
 using BSFiberCore.Models.BL.Calc;
+using BSFiberCore.Models.BL.Draw;
 using BSFiberCore.Models.BL.Lib;
 using BSFiberCore.Models.BL.Mat;
 using BSFiberCore.Models.BL.Ndm;
@@ -10,6 +11,7 @@ using BSFiberCore.Models.BL.Uom;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Data;
 using System.Drawing;
+using static Azure.Core.HttpHeader;
 
 namespace BSFiberCore.Models.BL
 {
@@ -547,6 +549,9 @@ namespace BSFiberCore.Models.BL
             }
         }
 
+        /// <summary>
+        /// Расчет на действие поперечных сил действующих по двум направлениям
+        /// </summary>
         private Dictionary<string, double> FiberCalculate_QxQy(Dictionary<string, double> _MNQ, double[] _sz)
         {
             double[] prms = new double[9];
@@ -558,9 +563,9 @@ namespace BSFiberCore.Models.BL
             var betonType = BSQuery.BetonTypeFind(0);
 
             BSFiberCalc_QxQy fiberCalc = new BSFiberCalc_QxQy();
-            fiberCalc.MatFiber = MatFiber;
-            fiberCalc.UseRebar = true;// UseRebar;
-            fiberCalc.Rebar = null;// m_SectionChart.Rebar; // поперечная амрматура из полей в контроле m_SectionChart
+            fiberCalc.MatFiber  = MatFiber;
+            fiberCalc.UseRebar  = UseReinforcement;
+            fiberCalc.Rebar     = Rebar;// m_SectionChart.Rebar; // поперечная амрматура из полей в контроле m_SectionChart
             fiberCalc.BetonType = betonType;
             fiberCalc.UnitConverter = _UnitConverter;
             // fiberCalc.SetFiberFromLoadData(fiber);
@@ -580,28 +585,7 @@ namespace BSFiberCore.Models.BL
 
             return xR;
         }
-
-
-        /// <summary>
-        /// Расчет на действие поперечных сил действующих по двум направлениям
-        /// </summary>
-        private Dictionary<string, double> CalcQxQy(double[] sz)
-        {
-            //SetFiberMaterialProperties();
-
-            //RecalRandomEccentricity_e0();            
-
-            if (MNQ["Qx"] == 0 && MNQ["Qy"] == 0)
-            {
-                return null;
-            }
-
-            Dictionary<string, double> resQxQy = FiberCalculate_QxQy(MNQ, sz);
-
-            return resQxQy;
-        }
-
-
+      
         /// <summary>
         /// Расчет по НДМ 
         /// </summary>
@@ -617,18 +601,15 @@ namespace BSFiberCore.Models.BL
                 sz[1] = Fiber.Length;
             }
 
-            Dictionary<string, double> resQxQy = CalcQxQy(sz);
+            Dictionary<string, double> resQxQy = FiberCalculate_QxQy(MNQ, sz);
 
             // данные с формы:
             Dictionary<string, double> _D = DictCalcParams(_beamSection);
-
-            // расчет на MxMyN по НДМ            
-            //NDMSetup _setup = NDMSetupValuesFromForm();
-
+            
             // расчет:
             CalcNDM calcNDM = new CalcNDM(_beamSection) { Dprm = _D };
 
-            Dictionary<string, double> resGr2 = null;
+            Dictionary<string, double>? resGroup2 = null;
 
             if (_beamSection == BeamSection.Any ||
                 _beamSection == BeamSection.Ring)
@@ -638,13 +619,13 @@ namespace BSFiberCore.Models.BL
                 calcNDM.CalcRes.b = Fiber.Width;
                 calcNDM.CalcRes.h = Fiber.Length;
 
-                resGr2 = FiberCalculateGroup2(calcNDM.CalcRes);
+                resGroup2 = FiberCalculateGroup2(calcNDM.CalcRes);
             }
             else if (BSHelper.IsRectangled(_beamSection))
             {
                 calcNDM.RunGroup1();
 
-                resGr2 = FiberCalculateGroup2(calcNDM.CalcRes);
+                resGroup2 = FiberCalculateGroup2(calcNDM.CalcRes);
             }
             else
             {
@@ -654,8 +635,10 @@ namespace BSFiberCore.Models.BL
             BSCalcResultNDM calcRes = new BSCalcResultNDM();
             if (calcNDM.CalcRes != null)
                 calcRes = calcNDM.CalcRes;
-            if (resGr2 != null)
-                calcRes.SetRes2Group(resGr2, true, true);
+
+            if (resGroup2 != null && calcRes != null)
+                calcRes.SetRes2Group(resGroup2, true, true);
+
             calcRes.ResQxQy = resQxQy;
             //calcRes.ImageStream = ImageStream;
             //calcRes.Coeffs = Coeffs;
@@ -734,10 +717,82 @@ namespace BSFiberCore.Models.BL
             return pathToSvgFile;
         }
 
-
-        private Dictionary<string, double>? FiberCalculateGroup2(object calcRes)
+        /// <summary>
+        /// Расчет по 2 группе предельных состояний
+        /// </summary>
+        /// <param name="calcRes"></param>
+        /// <returns></returns>
+        private Dictionary<string, double>? FiberCalculateGroup2(BSCalcResultNDM calcRes)
         {
-            return new Dictionary<string, double>() { };
+            bool calcOk;
+
+            try
+            {
+                BSBeam bsBeam;
+
+                if (BeamSection == BeamSection.Any)
+                {
+                    bsBeam = new BSBeam(calcRes.Area, calcRes.W_s, calcRes.I_s, calcRes.Jy, calcRes.Jx, calcRes.Sx, calcRes.Sy);
+                    bsBeam.b = calcRes.b;
+                    bsBeam.h = calcRes.h;
+
+                }
+                else
+                {
+                    bsBeam = BSBeam.construct(BeamSection);
+                    bsBeam.SetSizes(BeamSizes());
+                }
+
+                //Dictionary<string, double> MNQ = GetEffortsForCalc();
+
+                BSFiberCalc_Cracking calc_Cracking = new BSFiberCalc_Cracking(MNQ)
+                {
+                    Beam = bsBeam,
+                    typeOfBeamSection = BeamSection
+                };
+
+                double _As = calcRes.As_t;
+                double h0 = calcRes.h0_t;
+                double _a_s = Fiber.a_cm;
+
+                double _As1 = calcRes.As1_p;
+                double h01 = calcRes.h01_p;
+                double _a_s1 = Fiber.a1_cm; 
+
+                // задать тип арматуры
+                calc_Cracking.MatRebar = new BSMatRod(Fiber.Es)
+                {
+                    RCls  = Fiber.A_Rs,
+                    Rs    = Fiber.Rs,
+                    e_s0  = 0,
+                    e_s2  = 0,
+                    As    = _As,
+                    As1   = _As1,
+                    a_s   = _a_s,
+                    h0_t  = h0,
+                    a_s1  = _a_s1,
+                    h0_p  = h01,
+                    Reinforcement = UseReinforcement
+                };
+
+                //SetFiberMaterialProperties();
+
+                calc_Cracking.MatFiber = MatFiber;
+
+                calcOk = calc_Cracking.CalculateNDN();
+
+                var msgs = calc_Cracking.Msg;
+
+                Dictionary<string, double> res = calc_Cracking.ResGr2();
+
+                return res;
+            }
+            catch (Exception _e)
+            {
+                MessageBox.Show("Ошибка в расчете: " + _e.Message);
+            }
+
+            return null;
         }
         
         // арматура
@@ -748,6 +803,125 @@ namespace BSFiberCore.Models.BL
             double numEsValue = BSHelper.MPA2kgsm2(dbRebar?.Es);
 
             return dbRebar;
+        }
+
+        public void CreatePictureForBodyReport(List<BSCalcResultNDM> calcResultsNDM)
+        {
+            for (int i = 0; calcResultsNDM.Count > i; i++)
+            {
+                BSCalcResultNDM calcResNDM = calcResultsNDM[i];
+
+                List<string> pathToPictures = new List<string>();
+                string pathToPicture;
+                // изополя сечения по деформации
+                if (true)
+                {
+                    string pictureName = $"beamSectionMeshDeform{i}";
+                    pathToPicture = Directory.GetCurrentDirectory() + "\\" + pictureName + ".png";                    
+                    MeshDraw mDraw = CreateMosaic(1, calcResNDM.Eps_B, calcResNDM.Eps_S, calcResNDM.Eps_fbt_ult, calcResNDM.Eps_fb_ult, calcResNDM.Rs);
+                    mDraw.SaveToPNG("Относительные деформации", pathToPicture);
+
+                    pathToPictures.Add(pathToPicture);
+                }
+
+                // изополя сечения по напряжению
+                if (true)
+                {
+                    string pictureName = $"beamSectionMeshStress{i}";
+                    pathToPicture = Directory.GetCurrentDirectory() + "\\" + pictureName + ".png";
+                    // не самое элегантное решение, чтобы не рисовать ограничивающие рамки, в случае превышения нормативных значений
+                    double ultMaxValue = calcResNDM.Sig_B.Max() + 1;
+                    double ultMinValue = calcResNDM.Sig_B.Min() - 1;
+                    MeshDraw mDraw = CreateMosaic(2, calcResNDM.Sig_B, calcResNDM.Sig_S, ultMaxValue, ultMinValue, BSHelper.kgssm2kNsm(calcResNDM.Rs));                    
+                    mDraw.SaveToPNG("Напряжения", pathToPicture);
+
+                    pathToPictures.Add(pathToPicture);
+                }
+
+                if (pathToPictures.Count > 0)
+                {
+                    calcResNDM.PictureForBodyReport = pathToPictures;
+                }
+            }
+        }
+
+
+        /// <summary>
+        ///  Разбиение сечения на конечные элементы
+        /// </summary>
+        /// <param name="_valuesB">значения для бетона</param>
+        /// <param name="_valuesB">значения для арматуры</param>
+        private MeshDraw CreateMosaic(int _Mode = 0,
+                                List<double> _valuesB = null,
+                                List<double> _valuesS = null,
+                                double _ultMax = 0,
+                                double _ultMin = 0,
+                                double _ultRs = 0,
+                                double _e_st_ult = 0,
+                                double _e_s_ult = 0)
+        {
+            MeshDraw mDraw = null;
+
+            double[] sz = BeamSizes();
+
+            if (BSHelper.IsRectangled(BeamSection))
+            {
+                int nx = _beamSectionMeshSettings?.NX??10; 
+                int ny = _beamSectionMeshSettings?.NY??10;
+
+                mDraw = new MeshDraw(nx, ny);
+                mDraw.MosaicMode = _Mode;
+                mDraw.UltMax = _ultMax;
+                mDraw.UltMin = _ultMin;
+                mDraw.Rs_Ult = _ultRs;
+                mDraw.e_st_ult = _e_st_ult;
+                mDraw.e_s_ult = _e_s_ult;
+                mDraw.Values_B = _valuesB;
+                mDraw.Values_S = _valuesS;
+                mDraw.colorsAndScale = new ColorScale(_valuesB, _ultMax, _ultMin);
+                mDraw.CreateRectanglePlot1(sz, BeamSection);
+                mDraw.DrawReinforcementBar(BeamSection);
+
+            }
+            else if (BeamSection == BeamSection.Ring)
+            {
+                TriangleNet.Geometry.Point cg = new TriangleNet.Geometry.Point();
+                _ = GenerateMesh(ref cg);
+
+                mDraw = new MeshDraw(Tri.Tri.Mesh);
+                mDraw.MosaicMode = _Mode;
+                mDraw.UltMax = _ultMax;
+                mDraw.UltMin = _ultMin;
+                mDraw.Rs_Ult = _ultRs;
+                mDraw.e_st_ult = _e_st_ult;
+                mDraw.e_s_ult = _e_s_ult;
+                mDraw.Values_B = _valuesB;
+                mDraw.Values_S = _valuesS;
+                mDraw.colorsAndScale = new ColorScale(_valuesB, _ultMax, _ultMin);
+                mDraw.PaintSectionMesh();
+                mDraw.DrawReinforcementBar(BeamSection);
+
+            }
+            else if (BeamSection == BeamSection.Any) //заданное пользователем сечение
+            {
+                //TriangleNet.Geometry.Point cg = new TriangleNet.Geometry.Point();
+                SectionChart.GenerateMesh(0);
+
+                mDraw = new MeshDraw(Tri.Tri.Mesh);
+                mDraw.MosaicMode = _Mode;
+                mDraw.UltMax = _ultMax;
+                mDraw.UltMin = _ultMin;
+                mDraw.Rs_Ult = _ultRs;
+                mDraw.e_st_ult = _e_st_ult;
+                mDraw.e_s_ult = _e_s_ult;
+                mDraw.Values_B = _valuesB;
+                mDraw.Values_S = _valuesS;
+                mDraw.colorsAndScale = new ColorScale(_valuesB, _ultMax, _ultMin);
+                mDraw.PaintSectionMesh();
+                mDraw.DrawReinforcementBar(BeamSection);
+            }
+
+            return mDraw;
         }
     }   
 }
