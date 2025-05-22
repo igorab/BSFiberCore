@@ -61,7 +61,7 @@ namespace BSFiberCore.Models.BL
         private double[] BeamSizes(double _length = 0)
         {
             double[] sz = new double[2];
-            double b = Fiber.Width, h = Fiber.Length;
+            
             double bf = Fiber.bf, hf = Fiber.hf, bw = Fiber.bw, hw = Fiber.hw, b1f = Fiber.b1f, h1f = Fiber.h1f;
             double r1 = Fiber.R1, r2 = Fiber.R2;
 
@@ -71,7 +71,7 @@ namespace BSFiberCore.Models.BL
             }
             else if (BeamSection == BeamSection.Rect)
             {
-                sz = new double[] { b, h, _length };
+                sz = new double[] { Fiber.b, Fiber.h, Fiber.Length };
             }
             else if (BeamSection == BeamSection.TBeam)
             {
@@ -813,31 +813,27 @@ namespace BSFiberCore.Models.BL
 
                 List<string> pathToPictures = new List<string>();
                 string pathToPicture;
-                // изополя сечения по деформации
-                if (true)
+                // изополя сечения по деформации                
+                string pictureName = $"beamSectionMeshDeform{i}";
+                pathToPicture = Directory.GetCurrentDirectory() + "\\" + pictureName + ".png";                    
+                MeshDraw mDraw = CreateMosaic(1, calcResNDM.Eps_B, calcResNDM.Eps_S, calcResNDM.Eps_fbt_ult, calcResNDM.Eps_fb_ult, calcResNDM.Rs);
+                if (mDraw.SaveToPNG("Относительные деформации", pathToPicture))
                 {
-                    string pictureName = $"beamSectionMeshDeform{i}";
-                    pathToPicture = Directory.GetCurrentDirectory() + "\\" + pictureName + ".png";                    
-                    MeshDraw mDraw = CreateMosaic(1, calcResNDM.Eps_B, calcResNDM.Eps_S, calcResNDM.Eps_fbt_ult, calcResNDM.Eps_fb_ult, calcResNDM.Rs);
-                    mDraw.SaveToPNG("Относительные деформации", pathToPicture);
-
                     pathToPictures.Add(pathToPicture);
                 }
-
-                // изополя сечения по напряжению
-                if (true)
+                                    
+                // изополя сечения по напряжению                
+                string pictureNameStress = $"beamSectionMeshStress{i}";
+                pathToPicture = Directory.GetCurrentDirectory() + "\\" + pictureName + ".png";
+                // не самое элегантное решение, чтобы не рисовать ограничивающие рамки, в случае превышения нормативных значений
+                double ultMaxValue = calcResNDM.Sig_B?.Max()??0 + 1;
+                double ultMinValue = calcResNDM.Sig_B?.Min()??0 - 1;
+                MeshDraw mDrawStress = CreateMosaic(2, calcResNDM.Sig_B, calcResNDM.Sig_S, ultMaxValue, ultMinValue, BSHelper.kgssm2kNsm(calcResNDM.Rs));                    
+                if (mDraw.SaveToPNG("Напряжения", pathToPicture))
                 {
-                    string pictureName = $"beamSectionMeshStress{i}";
-                    pathToPicture = Directory.GetCurrentDirectory() + "\\" + pictureName + ".png";
-                    // не самое элегантное решение, чтобы не рисовать ограничивающие рамки, в случае превышения нормативных значений
-                    double ultMaxValue = calcResNDM.Sig_B.Max() + 1;
-                    double ultMinValue = calcResNDM.Sig_B.Min() - 1;
-                    MeshDraw mDraw = CreateMosaic(2, calcResNDM.Sig_B, calcResNDM.Sig_S, ultMaxValue, ultMinValue, BSHelper.kgssm2kNsm(calcResNDM.Rs));                    
-                    mDraw.SaveToPNG("Напряжения", pathToPicture);
-
                     pathToPictures.Add(pathToPicture);
                 }
-
+                                
                 if (pathToPictures.Count > 0)
                 {
                     calcResNDM.PictureForBodyReport = pathToPictures;

@@ -79,26 +79,39 @@ namespace BSFiberCore.Models.BL.Draw
         /// <summary>
         /// сохранение объекта FormsPlot на картинке
         /// </summary>
-        public void SaveToPNG(string title = null, string fullPath = null)
+        public bool SaveToPNG(string title = null, string fullPath = null)
         {
-            if (colorsAndScale != null)
+            bool save_ok = false;
+
+            try
             {
-                Plot myPlot = null;
-                if (title == "Напряжения")
-                    myPlot = colorsAndScale.CreateColorScale(MosaicMode, "кг/см2"); 
-                else
-                    myPlot = colorsAndScale.CreateColorScale(MosaicMode); 
+                if (colorsAndScale != null)
+                {
+                    Plot myPlot = null;
 
-                string pathToPicture = "ColorScale.png";
-                myPlot.SavePng(pathToPicture, 100, _heightToSave);
-                // нужно повернуть картинку, иначе она не встает в Plot.Axes.Left.Label.Image
-                Bitmap image = new Bitmap(pathToPicture);
+                    if (title == "Напряжения")
+                        myPlot = colorsAndScale.CreateColorScale(MosaicMode, "кг/см2");
+                    else
+                        myPlot = colorsAndScale.CreateColorScale(MosaicMode);
 
-                image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                image.Save(pathToPicture, System.Drawing.Imaging.ImageFormat.Png);
+                    string pathToPicture = "ColorScale.png";
+                    myPlot.SavePng(pathToPicture, 100, _heightToSave);
+                    // нужно повернуть картинку, иначе она не встает в Plot.Axes.Left.Label.Image
+                    Bitmap image = new Bitmap(pathToPicture);
 
-                ScottPlot.Image img1 = new ScottPlot.Image(pathToPicture);             
-            }                      
+                    image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    image.Save(pathToPicture, System.Drawing.Imaging.ImageFormat.Png);
+
+                    ScottPlot.Image img1 = new ScottPlot.Image(pathToPicture);
+                    save_ok = img1 != null;
+                }                
+            }
+            catch
+            {
+                save_ok = false;
+            }
+
+            return save_ok;
         }
         
         /// <summary>

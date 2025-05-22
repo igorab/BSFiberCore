@@ -22,9 +22,11 @@ namespace BSFiberCore.Models
 
         // размеры
         public int SectionType { get; set; }
-        public double Length { get; set; }
+        public double Length { get; set; }       
         public double Width { get; set; }
-
+        public double Height { get; set; }
+        public double b => Width;
+        public double h => Height;
         public double bf { get; set; }
         public double hf { get; set; }
         public double bw { get; set; }
