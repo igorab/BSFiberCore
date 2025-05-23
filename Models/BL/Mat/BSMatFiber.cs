@@ -8,21 +8,24 @@ namespace BSFiberCore.Models.BL.Mat
         public string Name => "Фибробетон";
         public double E_young => Efb;
 
-        // Начальный модуль упругости бетона-матрицы B30 СП63
-        public double Eb { get => Efb; }
+        // Модуль упругости стальной фибры
+        public double Ef { get; set; }
+
+        // Начальный модуль упругости бетона-матрицы СП63
+        public double Eb { get; set; }
 
         //Модуль упругости на растяжение
         public double Efbt { get; set; }
 
         /// <summary>
-        /// Начальный модуль упругости
+        /// Расчитанный модуль упругости фибробетона
         /// </summary>
-        public double Efb { get; set; }
+        public double Efb => Eb * (1 - Mu_fv) + Ef * Mu_fv;
 
         /// <summary>
-        /// Коэффициент упругости
+        /// Коэффициент фибрового армирования по объему
         /// </summary>
-        public double Nu_fb { get; set; }
+        public double Mu_fv { get; set; }
 
         /// <summary>
         ///  предельное значение относительной деформации фибробетона при сжатии
@@ -46,12 +49,20 @@ namespace BSFiberCore.Models.BL.Mat
         private double m_Rfbt2;
         private double m_Rfbt3;
 
+        public BSMatFiber()
+        {
+        }
+
         /// <summary>
         /// Инициализация данными с формы
         /// </summary>        
-        public BSMatFiber(double _Efb, double _Yft, double _Yb, double _Yb1, double _Yb2, double _Yb3, double _Yb5)
+        public BSMatFiber(double _Ef, double _mu_fv, double _Efbt, double _Eb,
+                         double _Yft, double _Yb, double _Yb1, double _Yb2, double _Yb3, double _Yb5)
         {
-            Efb = _Efb;
+            Ef = (double)_Ef;
+            Eb = (double)_Eb;
+            Efbt = (double)_Efbt;
+            Mu_fv = (double)_mu_fv;
             Yft = (double)_Yft;
             Yb = (double)_Yb;
             Yb1 = (double)_Yb1;
@@ -129,10 +140,6 @@ namespace BSFiberCore.Models.BL.Mat
         public double e_b2 { get; set; }
 
         public double Eb_red { get => (e_b1 != 0) ? R_fb / e_b1 : 0; }
-
-        // коэффициент приведения арматуры к фибробетону Пособие к СП 52-102-2004 п.п.2.33
-        public double alfa(double _Es) => _Es / Efb;
-
 
         //характеристика сжатой зоны сталефибробетона, принимаемая для
         // сталефибробетона из тяжелого бетона классов до В60 включительно равной 0,8
@@ -297,15 +304,6 @@ namespace BSFiberCore.Models.BL.Mat
                 return 0;
 
             return _Rfbt / _Efb;
-        }
-
-        public BSMatFiber()
-        {
-        }
-
-        public BSMatFiber(double _Eb)
-        {
-            Efb = _Eb;
         }
     }
 }

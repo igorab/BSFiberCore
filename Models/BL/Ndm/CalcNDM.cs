@@ -83,7 +83,7 @@ namespace BSFiberCore.Models.BL.Ndm
                 Dprm.Add("rods_area", _area);
 
             My0 = Dprm["My"];
-            Mx0 = Dprm["Mz"];
+            Mx0 = Dprm["Mx"];
             N0  = Dprm["N"];
         }
 

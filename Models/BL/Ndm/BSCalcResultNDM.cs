@@ -343,7 +343,7 @@ namespace BSFiberCore.Models.BL.Ndm
             b  = _D["b"];
             h  = _D["h"];
 
-            Mx = _D["Mz"];
+            Mx = _D["Mx"];
             My = _D["My"];
             N =  _D["N"];
             Qx = _D["Qx"];

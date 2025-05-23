@@ -78,12 +78,11 @@ namespace BSFiberCore.Models
 
         // модуль упругости арматуры
         public double Es { get; set; }
-        // модуль упругости бетона
-        public double Ef { get; set; }
-        public double Efbt { get; set; }
-        public double Eb { get; set; }
-
-        public double mu_fv { get; set; }
+        // модули упругости 
+        public double Ef { get; set; } // фибра
+        public double Efbt { get; set; } //фибробетон-растяжение
+        public double Eb { get; set; } // бетон-матрица, сжатие
+        public double mu_fv { get; set; } // коэффициент фибрового армирования
 
         // коэффициенты надежности
         public double Yft { get;  set; }

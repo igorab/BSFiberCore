@@ -36,7 +36,7 @@
         <label for="section2">Двутавр</label>
         <input asp-for="SectionType" type="radio" id="IBeam" name="SectionType" value="2" />        
         <br>
-        <p padding-left: 100px>
+        <p style="padding-left: 100px">
             <div>
                 <label>Нижняя полка  :</label>
                 <label>bf:</label>
@@ -141,10 +141,11 @@
     </div>
     <br>
     <div>
-        <h6>Модули упругости бетона:</h6>
-        <label>Ef, кг/см2</label><input asp-for=Ef type="number" step="0.1" value=2141404.0200 />
-        <label>Efb t, кг/см2</label><input asp-for=Efbt type="number" step="0.1" value=367607.6901 />
-        <label>Eb, кг/см2</label><input asp-for=Ef type="number" step="0.1" value=331407.7650 />
+        <h6>Модули упругости:</h6>
+        <label>Фибра Ef, кг/см2</label><input asp-for=Ef type="number" step="1.0" value=2141404.0200 />
+        <label> Коэффициент армирования</label><input asp-for=mu_fv type="number" step="0.1" value=0.0200 />
+        <label>Фибробетон растяжение Efb t, кг/см2</label><input asp-for=Efbt type="number" step="1.0" value=367607.6901 />
+        <label>Бетон-матрица Eb, кг/см2</label><input asp-for=Eb type="number" step="1.0" value=331407.7650 />        
     </div>
     <br>
     <div>

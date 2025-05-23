@@ -8,10 +8,8 @@ using BSFiberCore.Models.BL.Rep;
 using BSFiberCore.Models.BL.Sec;
 using BSFiberCore.Models.BL.Tri;
 using BSFiberCore.Models.BL.Uom;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Data;
 using System.Drawing;
-using static Azure.Core.HttpHeader;
 
 namespace BSFiberCore.Models.BL
 {
@@ -141,8 +139,7 @@ namespace BSFiberCore.Models.BL
             fibCalc.UseRebar = UseReinforcement;
             fibCalc.Rebar         = new Rebar() { };
             fibCalc.BetonType     = new BetonType() { };
-            fibCalc.UnitConverter = _UnitConverter;
-            fibCalc.SetFiberFromLoadData(new FiberBeton() { });
+            fibCalc.UnitConverter = _UnitConverter;            
             fibCalc.SetSize(sz);
             fibCalc.SetParams(_prms);
             fibCalc.SetEfforts(_MNQ);
@@ -340,13 +337,13 @@ namespace BSFiberCore.Models.BL
 
             BfnSelectedValue(Fiber.Bfb, 0, 1, ref rfbn, ref Eb, ref Bclass);
             
-            MatFiber = new BSMatFiber(Fiber.Ef, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5)
+            MatFiber = new BSMatFiber(Fiber.Ef, Fiber.mu_fv, Fiber.Efbt, Fiber.Eb, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5)
             {
                 B = Bclass,
                 Rfbt3n = rfbt3n,
                 Rfbt2n = rfbt2n,
                 Rfbtn  = rfbtn,
-                Rfbn   = rfbn
+                Rfbn   = rfbn,                
             };
 
             Rebar = RebarSelectedValues(Fiber.A_Rs);
@@ -422,7 +419,7 @@ namespace BSFiberCore.Models.BL
                 // enforces
                 ["N"]  = MNQ.ContainsKey("N") ? -MNQ["N"] : 0,
                 ["My"] = MNQ.ContainsKey("My") ? MNQ["My"] : 0,
-                ["Mz"] = MNQ.ContainsKey("Mx") ? MNQ["Mx"] : 0,
+                ["Mx"] = MNQ.ContainsKey("Mx") ? MNQ["Mx"] : 0,
                 ["Qx"] = MNQ.ContainsKey("Qx") ? MNQ["Qx"] : 0,
                 ["Qy"] = MNQ.ContainsKey("Qy") ? MNQ["Qy"] : 0,
                 //
@@ -558,8 +555,6 @@ namespace BSFiberCore.Models.BL
 
             InitStrengthFactorsFromForm(prms);
 
-            BSMatFiber fiber = new BSMatFiber(Fiber.Ef, Fiber.Yft, Fiber.Yb, Fiber.Yb1, Fiber.Yb2, Fiber.Yb3, Fiber.Yb5);
-            
             var betonType = BSQuery.BetonTypeFind(0);
 
             BSFiberCalc_QxQy fiberCalc = new BSFiberCalc_QxQy();

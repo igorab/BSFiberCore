@@ -277,21 +277,7 @@ namespace BSFiberCore.Models.BL.Calc
 
             return fiberCalc;
         }
-
-        /// <summary>
-        ///  получить значения из настроек по умолчанию (Из json - файла)
-        /// </summary>
-        /// <param name="_fiber"></param>
-        public void SetFiberFromLoadData(FiberBeton _fiber)
-        {
-            m_Fiber = (FiberBeton)_fiber.Clone();
-
-            Ef    = _fiber.Ef;
-            mu_fv = _fiber.mu_fv;
-            Eb    = _fiber.Eb;            
-            Efb   = _fiber.E_fbt != 0 ? _fiber.E_fbt : _fiber.Efb;
-        } 
-                
+                        
         /// <summary>
         /// Информация о результате проверки сечения на действие продольной силы
         /// </summary>                
